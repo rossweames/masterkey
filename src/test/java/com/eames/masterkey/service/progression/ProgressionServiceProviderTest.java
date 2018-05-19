@@ -3,7 +3,6 @@ package com.eames.masterkey.service.progression;
 import com.eames.masterkey.service.ProcessingCapability;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
-import org.json.simple.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,7 +32,7 @@ public class ProgressionServiceProviderTest {
     private abstract class TestBittingListService implements ProgressionService {
 
         @Override
-        public JSONObject generateBittingList(JSONObject configs) throws ProgressionServiceException {
+        public String generateBittingList(String configs) throws ProgressionServiceException {
             return null;
         }
 
@@ -121,7 +120,7 @@ public class ProgressionServiceProviderTest {
 
         try {
 
-            serviceProvider.findServiceForConfigs(new JSONObject());
+            serviceProvider.findServiceForConfigs("");
 
             fail();
 
@@ -136,7 +135,7 @@ public class ProgressionServiceProviderTest {
 
         services.add(new TestBittingListService() {
             @Override
-            public ProcessingCapability canProcessConfigs(JSONObject configs) {
+            public ProcessingCapability canProcessConfigs(String configs) {
                 return ProcessingCapability.NO;
             }
         });
@@ -144,7 +143,7 @@ public class ProgressionServiceProviderTest {
 
         try {
 
-            serviceProvider.findServiceForConfigs(new JSONObject());
+            serviceProvider.findServiceForConfigs("");
 
             fail();
 
@@ -159,7 +158,7 @@ public class ProgressionServiceProviderTest {
 
         ProgressionService service = new TestBittingListService() {
             @Override
-            public ProcessingCapability canProcessConfigs(JSONObject configs) {
+            public ProcessingCapability canProcessConfigs(String configs) {
                 return ProcessingCapability.MAYBE;
             }
         };
@@ -168,7 +167,7 @@ public class ProgressionServiceProviderTest {
 
         try {
 
-            ProgressionService foundService = serviceProvider.findServiceForConfigs(new JSONObject());
+            ProgressionService foundService = serviceProvider.findServiceForConfigs("");
 
             assertEquals(service, foundService);
 
@@ -183,7 +182,7 @@ public class ProgressionServiceProviderTest {
 
         ProgressionService service = new TestBittingListService() {
             @Override
-            public ProcessingCapability canProcessConfigs(JSONObject configs) {
+            public ProcessingCapability canProcessConfigs(String configs) {
                 return ProcessingCapability.YES;
             }
         };
@@ -192,7 +191,7 @@ public class ProgressionServiceProviderTest {
 
         try {
 
-            ProgressionService foundService = serviceProvider.findServiceForConfigs(new JSONObject());
+            ProgressionService foundService = serviceProvider.findServiceForConfigs("");
 
             assertEquals(service, foundService);
 
@@ -207,14 +206,14 @@ public class ProgressionServiceProviderTest {
 
         ProgressionService service = new TestBittingListService() {
             @Override
-            public ProcessingCapability canProcessConfigs(JSONObject configs) {
+            public ProcessingCapability canProcessConfigs(String configs) {
                 return ProcessingCapability.YES;
             }
         };
         services.add(service);
         ProgressionService service2 = new TestBittingListService() {
             @Override
-            public ProcessingCapability canProcessConfigs(JSONObject configs) {
+            public ProcessingCapability canProcessConfigs(String configs) {
                 return ProcessingCapability.YES;
             }
         };
@@ -223,7 +222,7 @@ public class ProgressionServiceProviderTest {
 
         try {
 
-            ProgressionService foundService = serviceProvider.findServiceForConfigs(new JSONObject());
+            ProgressionService foundService = serviceProvider.findServiceForConfigs("");
 
             assertThat(foundService, new TestMatcher() {
                 @Override
@@ -244,14 +243,14 @@ public class ProgressionServiceProviderTest {
 
         ProgressionService service = new TestBittingListService() {
             @Override
-            public ProcessingCapability canProcessConfigs(JSONObject configs) {
+            public ProcessingCapability canProcessConfigs(String configs) {
                 return ProcessingCapability.MAYBE;
             }
         };
         services.add(service);
         ProgressionService service2 = new TestBittingListService() {
             @Override
-            public ProcessingCapability canProcessConfigs(JSONObject configs) {
+            public ProcessingCapability canProcessConfigs(String configs) {
                 return ProcessingCapability.MAYBE;
             }
         };
@@ -260,7 +259,7 @@ public class ProgressionServiceProviderTest {
 
         try {
 
-            ProgressionService foundService = serviceProvider.findServiceForConfigs(new JSONObject());
+            ProgressionService foundService = serviceProvider.findServiceForConfigs("");
 
             assertThat(foundService, new TestMatcher() {
                 @Override
@@ -281,21 +280,21 @@ public class ProgressionServiceProviderTest {
 
         ProgressionService service = new TestBittingListService() {
             @Override
-            public ProcessingCapability canProcessConfigs(JSONObject configs) {
+            public ProcessingCapability canProcessConfigs(String configs) {
                 return ProcessingCapability.YES;
             }
         };
         services.add(service);
         ProgressionService service2 = new TestBittingListService() {
             @Override
-            public ProcessingCapability canProcessConfigs(JSONObject configs) {
+            public ProcessingCapability canProcessConfigs(String configs) {
                 return ProcessingCapability.NO;
             }
         };
         services.add(service2);
         ProgressionService service3 = new TestBittingListService() {
             @Override
-            public ProcessingCapability canProcessConfigs(JSONObject configs) {
+            public ProcessingCapability canProcessConfigs(String configs) {
                 return ProcessingCapability.MAYBE;
             }
         };
@@ -304,7 +303,7 @@ public class ProgressionServiceProviderTest {
 
         try {
 
-            ProgressionService foundService = serviceProvider.findServiceForConfigs(new JSONObject());
+            ProgressionService foundService = serviceProvider.findServiceForConfigs("");
 
             assertEquals(service, foundService);
 
