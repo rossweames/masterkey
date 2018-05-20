@@ -2,11 +2,8 @@ package com.eames.masterkey.service.progression;
 
 import com.eames.masterkey.service.AbstractServiceProvider;
 import com.eames.masterkey.service.ProcessingCapability;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * This class is a service provider for {@link ProgressionService}s.
@@ -14,9 +11,6 @@ import java.util.Iterator;
  */
 public class ProgressionServiceProvider
         extends AbstractServiceProvider<ProgressionService> {
-
-    // Initialize the Log4j logger.
-    static final Logger logger = LogManager.getLogger(ProgressionServiceProvider.class);
 
     /**
      * Constructor
@@ -29,7 +23,7 @@ public class ProgressionServiceProvider
 
         // Register each service.
         if (services != null)
-            services.stream().forEach(s -> registerService(s));
+            services.stream().forEach(this::registerService);
     }
 
     /**
@@ -50,11 +44,7 @@ public class ProgressionServiceProvider
 
         // Loop through the services and find the one that best fits the configs.
         Collection<ProgressionService> registeredServices = getRegisteredServices();
-        Iterator<ProgressionService> serviceIter = registeredServices.iterator();
-        while (serviceIter.hasNext()) {
-
-            // Get the next service.
-            ProgressionService service = serviceIter.next();
+        for (ProgressionService service : registeredServices) {
 
             // Test the service's capability to process the configs.
             ProcessingCapability capability = service.canProcessConfigs(configs);

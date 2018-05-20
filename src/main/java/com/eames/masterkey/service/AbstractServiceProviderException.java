@@ -11,7 +11,7 @@ public abstract class AbstractServiceProviderException
      *
      * @param message the exception message
      */
-    public AbstractServiceProviderException(String message) {
+    protected AbstractServiceProviderException(String message) {
         super(message);
     }
 }

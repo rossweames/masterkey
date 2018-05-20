@@ -31,7 +31,7 @@ public class BittingListHTTPGateway
      * The service provider is responsible for instantiating the appropriate service to handle the request based on
      * the request body (a set of configurations).
      */
-    private ProgressionServiceProvider serviceProvider;
+    private final ProgressionServiceProvider serviceProvider;
 
     /**
      * The default constructor

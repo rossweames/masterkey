@@ -59,7 +59,7 @@ public class RandomGenericTotalProgressionService
     // Initialize the Log4j logger.
     private static final Logger logger = LogManager.getLogger(RandomGenericTotalProgressionService.class);
 
-    /**
+    /*
      * Overridden {@link ProgressionService} operations
      */
 
@@ -67,9 +67,6 @@ public class RandomGenericTotalProgressionService
     public ProcessingCapability canProcessConfigs(String configs) {
 
         logger.info("Verifying that this service can process the configurations.");
-
-        // Default the capability to 'no'.
-        ProcessingCapability capability = ProcessingCapability.NO;
 
         do {
 
@@ -92,7 +89,7 @@ public class RandomGenericTotalProgressionService
                 break;
             }
 
-            /**
+            /*
              * Validate that the configurations contain the cut count attribute and that its value is valid.
              */
 
@@ -119,7 +116,7 @@ public class RandomGenericTotalProgressionService
                 break;
             }
 
-            /**
+            /*
              * Validate that the configurations contain the depth count attribute and that its value is valid.
              */
 
@@ -146,7 +143,7 @@ public class RandomGenericTotalProgressionService
                 break;
             }
 
-            /**
+            /*
              * Validate that the configurations contain the starting depth attribute and that its value is valid.
              */
 
@@ -173,7 +170,7 @@ public class RandomGenericTotalProgressionService
                 break;
             }
 
-            /**
+            /*
              * Validate that the configurations contain the progression step attribute and that its value is valid.
              */
 
@@ -200,7 +197,7 @@ public class RandomGenericTotalProgressionService
                 break;
             }
 
-            /**
+            /*
              * Validate that the configurations contain the MACS attribute and that its value is valid.
              */
 
@@ -243,7 +240,7 @@ public class RandomGenericTotalProgressionService
                 return ProcessingCapability.MAYBE;
             }
 
-            /**
+            /*
              * If we get here, everything looks good.
              */
 
