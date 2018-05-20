@@ -8,7 +8,7 @@ public abstract class AbstractServiceProvider<T>
         implements ServiceProvider<T> {
 
     // The collection of registered services
-    private Set<T> registeredServices = new HashSet<>();
+    private final Set<T> registeredServices = new HashSet<>();
 
     @Override
     public void registerService(T service) {
