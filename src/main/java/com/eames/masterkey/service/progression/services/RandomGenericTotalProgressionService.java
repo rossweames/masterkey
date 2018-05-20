@@ -27,7 +27,7 @@ import org.json.JSONObject;
 public class RandomGenericTotalProgressionService
         implements ProgressionService {
 
-    /**
+    /*
      * The configuration constants
      */
 

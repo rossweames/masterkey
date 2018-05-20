@@ -16,7 +16,7 @@ public class ProgressionServiceProvider
      * Constructor
      *
      * Registers all the {@link ProgressionService}s passed in.
-
+     *
      * @param services the collection of services to manage
      */
     public ProgressionServiceProvider(Collection<ProgressionService> services) {
