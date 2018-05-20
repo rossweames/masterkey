@@ -277,8 +277,7 @@ public class RandomGenericTotalProgressionService
         bittingList.setMaster(new int[] {3, 5, 4, 2, 1, 5});
 
         /*
-         * Construct a gson instance using the given field exclusions.
-         *
+         * Construct a gson instance using the gson builder.
          * Specify that int arrays should be serialized as strings.
          */
         Gson gson = new GsonBuilder()
