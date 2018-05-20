@@ -5,7 +5,8 @@ import com.eames.masterkey.service.progression.ProgressionService;
 import com.eames.masterkey.service.progression.ProgressionServiceException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.simple.JSONObject;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * This class is responsible for generating a bitting list using the given cut count, depth count, starting depth,
@@ -63,7 +64,7 @@ public class RandomGenericTotalProgressionService
      */
 
     @Override
-    public ProcessingCapability canProcessConfigs(JSONObject configs) {
+    public ProcessingCapability canProcessConfigs(String configs) {
 
         logger.info("Verifying that this service can process the configurations.");
 
@@ -77,13 +78,34 @@ public class RandomGenericTotalProgressionService
                 break;
             }
 
+            // The JSON configs as an object.
+            JSONObject jsonConfigs;
+            try {
+
+                // Instantiate a JSON object from the string.
+                // Throws: JSONException
+                jsonConfigs = new JSONObject(configs);
+
+            } catch (JSONException ex) {
+
+                logger.debug("Could not parse the configuration string into JSON. Cause: {}", ex.getMessage());
+                break;
+            }
+
             /**
              * Validate that the configurations contain the cut count attribute and that its value is valid.
              */
 
-            Object cutCountObj = configs.get(CUT_COUNT_KEY);
-            if (cutCountObj == null) {
-                logger.debug("Missing '" + CUT_COUNT_KEY + "' configuration.");
+            Object cutCountObj;
+            try {
+
+                // Get the cut count.
+                // Throws: JSONException
+                cutCountObj = jsonConfigs.get(CUT_COUNT_KEY);
+
+            } catch (JSONException ex) {
+
+                logger.debug("Missing '{}' configuration. Cause: {}", CUT_COUNT_KEY, ex.getMessage());
                 break;
             }
             if (!(cutCountObj instanceof Integer)) {
@@ -101,9 +123,16 @@ public class RandomGenericTotalProgressionService
              * Validate that the configurations contain the depth count attribute and that its value is valid.
              */
 
-            Object depthCountObj = configs.get(DEPTH_COUNT_KEY);
-            if (depthCountObj == null) {
-                logger.debug("Missing '" + DEPTH_COUNT_KEY + "' configuration.");
+            Object depthCountObj;
+            try {
+
+                // Get the depth count.
+                // Throws: JSONException
+                depthCountObj = jsonConfigs.get(DEPTH_COUNT_KEY);
+
+            } catch (JSONException ex) {
+
+                logger.debug("Missing '{}' configuration. Cause: {}", DEPTH_COUNT_KEY, ex.getMessage());
                 break;
             }
             if (!(depthCountObj instanceof Integer)) {
@@ -121,9 +150,16 @@ public class RandomGenericTotalProgressionService
              * Validate that the configurations contain the starting depth attribute and that its value is valid.
              */
 
-            Object startingDepthObj = configs.get(STARTING_DEPTH_KEY);
-            if (startingDepthObj == null) {
-                logger.debug("Missing '" + STARTING_DEPTH_KEY + "' configuration.");
+            Object startingDepthObj ;
+            try {
+
+                // Get the starting depth.
+                // Throws: JSONException
+                startingDepthObj = jsonConfigs.get(STARTING_DEPTH_KEY);
+
+            } catch (JSONException ex) {
+
+                logger.debug("Missing '{}' configuration. Cause: {}", STARTING_DEPTH_KEY, ex.getMessage());
                 break;
             }
             if (!(startingDepthObj instanceof Integer)) {
@@ -141,9 +177,16 @@ public class RandomGenericTotalProgressionService
              * Validate that the configurations contain the progression step attribute and that its value is valid.
              */
 
-            Object progressionStepObj = configs.get(PROGRESSION_STEP_KEY);
-            if (progressionStepObj == null) {
-                logger.debug("Missing '" + PROGRESSION_STEP_KEY + "' configuration.");
+            Object progressionStepObj;
+            try {
+
+                // Get the progression step.
+                // Throws: JSONException
+                progressionStepObj = jsonConfigs.get(PROGRESSION_STEP_KEY);
+
+            } catch (JSONException ex) {
+
+                logger.debug("Missing '{}' configuration. Cause: {}", PROGRESSION_STEP_KEY, ex.getMessage());
                 break;
             }
             if (!(progressionStepObj instanceof Integer)) {
@@ -161,9 +204,16 @@ public class RandomGenericTotalProgressionService
              * Validate that the configurations contain the MACS attribute and that its value is valid.
              */
 
-            Object macsObj = configs.get(MACS_KEY);
-            if (macsObj == null) {
-                logger.debug("Missing '" + MACS_KEY + "' configuration.");
+            Object macsObj;
+            try {
+
+                // Get the MACS.
+                // Throws: JSONException
+                macsObj = jsonConfigs.get(MACS_KEY);
+
+            } catch (JSONException ex) {
+
+                logger.debug("Missing '{}' configuration. Cause: {}", MACS_KEY, ex.getMessage());
                 break;
             }
             if (!(macsObj instanceof Integer)) {
@@ -178,12 +228,12 @@ public class RandomGenericTotalProgressionService
             }
 
             // The configurations contain extra, unrecognized attributes.
-            if (configs.keySet().size() > 5) {
+            if (jsonConfigs.keySet().size() > 5) {
 
                 logger.info("This service can process the configurations if necessary.");
                 logger.debug("The configurations contain the following attributes that will be ignored:");
 
-                configs.keySet().stream()
+                jsonConfigs.keySet().stream()
                         .filter(k -> (!k.equals(CUT_COUNT_KEY) && !k.equals(DEPTH_COUNT_KEY) &&
                                 !k.equals(STARTING_DEPTH_KEY) && !k.equals(PROGRESSION_STEP_KEY) &&
                                 !k.equals(MACS_KEY)))
@@ -211,7 +261,7 @@ public class RandomGenericTotalProgressionService
     }
 
     @Override
-    public JSONObject generateBittingList(JSONObject configs)
+    public String generateBittingList(String configs)
             throws ProgressionServiceException {
 
         // First, validate the configs to be sure.
@@ -225,7 +275,7 @@ public class RandomGenericTotalProgressionService
         jsonBittingList.put("master", "354215");
 
         // Return the JSON bitting list.
-        return jsonBittingList;
+        return jsonBittingList.toString();
     }
 
     @Override

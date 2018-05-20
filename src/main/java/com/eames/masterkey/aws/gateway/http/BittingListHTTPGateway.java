@@ -7,11 +7,10 @@ import com.eames.masterkey.service.progression.ProgressionServiceProviderExcepti
 import com.eames.masterkey.service.progression.ProgressionService;
 import com.eames.masterkey.service.progression.ProgressionServiceProvider;
 import com.eames.masterkey.service.progression.services.RandomGenericTotalProgressionService;
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.json.JSONObject;
 
 import java.io.*;
 import java.util.HashSet;
@@ -27,9 +26,6 @@ public class BittingListHTTPGateway
 
     // Initialize the Log4j logger.
     private static final Logger logger = LogManager.getLogger(BittingListHTTPGateway.class);
-
-    // The JSON parser
-    private JSONParser parser = new JSONParser();
 
     /**
      * The service provider is responsible for instantiating the appropriate service to handle the request based on
@@ -72,42 +68,23 @@ public class BittingListHTTPGateway
             // Construct a reader for the input stream.
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
-            // Parse the input stream into a JSON object; it contains the request body.
-            // Throws: IOException, ParseException
-            JSONObject requestBody = (JSONObject) parser.parse(reader);
-            logger.debug("Request: {}", requestBody.toJSONString());
+            // Read the input stream (request) into a string.
+            String jsonRequestStr = IOUtils.toString(reader);
+            logger.debug("Request: {}", jsonRequestStr);
 
             // Find a service to process the body.
             // Throws: ProgressionServiceProviderException
-            ProgressionService service = serviceProvider.findServiceForConfigs(requestBody);
+            ProgressionService service = serviceProvider.findServiceForConfigs(jsonRequestStr);
             logger.debug("Progression Service: {}", service.getName());
 
             // Generate the bitting list.
             // Throws: ProgressionServiceException
-            JSONObject jsonBittingList = service.generateBittingList(requestBody);
-            logger.debug("Bitting List: {}", jsonBittingList.toJSONString());
+            String jsonBittingListStr = service.generateBittingList(jsonRequestStr);
+            logger.debug("Bitting List: {}", jsonBittingListStr);
 
             // Insert the bitting list into the response.
-            responseJson.put("body", jsonBittingList);
+            responseJson.put("body", jsonBittingListStr);
             responseJson.put("statusCode", "200");
-
-        } catch (ParseException ex) {
-
-            String errorMessage = "The JSONParser failed to parse the request input stream.";
-            logger.error("{} Cause: {}", errorMessage, ex.getMessage());
-
-            responseJson.put("statusCode", "400");
-            responseJson.put("errorMessage", errorMessage);
-            responseJson.put("exception", ex.getMessage());
-
-        } catch (IOException ex) {
-
-            String errorMessage = "The JSONParser failed to read the request input stream.";
-            logger.error("{} Cause: {}", errorMessage, ex.getMessage());
-
-            responseJson.put("statusCode", "400");
-            responseJson.put("errorMessage", errorMessage);
-            responseJson.put("exception", ex.getMessage());
 
         } catch (ProgressionServiceProviderException ex) {
 
@@ -128,11 +105,11 @@ public class BittingListHTTPGateway
             responseJson.put("exception", ex.getMessage());
         }
 
-        logger.debug("Response: {}", responseJson.toJSONString());
+        logger.debug("Response: {}", responseJson.toString());
 
         // Write the response to rhe output stream.
         OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
-        writer.write(responseJson.toJSONString());
+        writer.write(responseJson.toString());
         writer.close();
     }
 }

@@ -4,7 +4,6 @@ import com.eames.masterkey.service.AbstractServiceProvider;
 import com.eames.masterkey.service.ProcessingCapability;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.simple.JSONObject;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -42,7 +41,7 @@ public class ProgressionServiceProvider
      * @throws ProgressionServiceProviderException if an error occurred or
      * no service could be found.
      */
-    public ProgressionService findServiceForConfigs(JSONObject configs)
+    public ProgressionService findServiceForConfigs(String configs)
             throws ProgressionServiceProviderException {
 
         // The 'maybe' service is the one we'll use if we can't find
