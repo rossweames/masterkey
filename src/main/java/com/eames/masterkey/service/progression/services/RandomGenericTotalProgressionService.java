@@ -1,12 +1,17 @@
 package com.eames.masterkey.service.progression.services;
 
+import com.eames.masterkey.model.BittingList;
 import com.eames.masterkey.service.ProcessingCapability;
 import com.eames.masterkey.service.progression.ProgressionService;
 import com.eames.masterkey.service.progression.ProgressionServiceException;
+import com.google.gson.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.lang.reflect.Type;
+import java.util.Arrays;
 
 /**
  * This class is responsible for generating a bitting list using the given cut count, depth count, starting depth,
@@ -267,12 +272,29 @@ public class RandomGenericTotalProgressionService
 
         // TODO: Need to generate the real bitting list.
 
-        JSONObject jsonBittingList = new JSONObject();
-        jsonBittingList.put("source", getName());
-        jsonBittingList.put("master", "354215");
+        BittingList bittingList = new BittingList();
+        bittingList.setSource(getName());
+        bittingList.setMaster(new int[] {3, 5, 4, 2, 1, 5});
+
+        /*
+         * Construct a gson instance using the given field exclusions.
+         *
+         * Specify that int arrays should be serialized as strings.
+         */
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(int[].class, (JsonSerializer<int[]>) (src, type, jsonSerializationContext) -> {
+                    StringBuilder sb = new StringBuilder();
+                    for (int v : src)
+                        sb.append(v);
+                    return new JsonPrimitive(sb.toString());
+                })
+                .create();
+
+        // Serialize the bitting list to JSON.
+        String jsonBittingListStr = gson.toJson(bittingList);
 
         // Return the JSON bitting list.
-        return jsonBittingList.toString();
+        return jsonBittingListStr;
     }
 
     @Override
