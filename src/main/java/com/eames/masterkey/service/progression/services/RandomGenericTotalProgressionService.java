@@ -1,6 +1,8 @@
 package com.eames.masterkey.service.progression.services;
 
+import com.eames.masterkey.model.BittingGroup;
 import com.eames.masterkey.model.BittingList;
+import com.eames.masterkey.model.KeyBitting;
 import com.eames.masterkey.service.ProcessingCapability;
 import com.eames.masterkey.service.progression.ProgressionService;
 import com.eames.masterkey.service.progression.ProgressionServiceException;
@@ -275,6 +277,13 @@ public class RandomGenericTotalProgressionService
         BittingList bittingList = new BittingList();
         bittingList.setSource(getName());
         bittingList.setMaster(new int[] {3, 5, 4, 2, 1, 5});
+
+        KeyBitting[] keyBittings = new KeyBitting[4];
+        keyBittings[0] = new KeyBitting(new int[] {1, 5, 4, 2, 1, 5});
+        keyBittings[1] = new KeyBitting(new int[] {5, 5, 4, 2, 1, 5});
+        keyBittings[2] = new KeyBitting(new int[] {7, 5, 4, 2, 1, 5});
+        keyBittings[3] = new KeyBitting(new int[] {9, 5, 4, 2, 1, 5});
+        bittingList.setChildren(keyBittings);
 
         /*
          * Construct a gson instance using the gson builder.

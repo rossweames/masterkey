@@ -2,9 +2,11 @@ package com.eames.masterkey.model;
 
 /**
  * This class represents a master key system bitting list.
+ *
+ * It consists of a source service and a {@link BittingGroup}.
  */
 public class BittingList
-        extends NodeBittingGroup {
+        extends BittingGroup {
 
     // The name of the service that generated this bitting list.
     private String source;

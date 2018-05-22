@@ -1,7 +1,7 @@
 package com.eames.masterkey.model;
 
 /**
- * This interface defines the operations mandatory for all classes that support master keys.
+ * This interface defines the operations mandatory for all classes that support a single master key.
  */
 public interface HasMaster {
 
@@ -13,7 +13,7 @@ public interface HasMaster {
     int[] getMaster();
 
     /**
-     * Sets the master key cuts.
+     * Sets the masterkey cuts.
      *
      * @param master the new master key cuts
      */

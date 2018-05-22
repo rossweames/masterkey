@@ -381,16 +381,16 @@ public class RandomGenericTotalProgressionServiceTest {
 
     // TODO: Need more generateBittingList() tests.
 
-//    @Test
-//    public void testGenerateBittingList_Logged() {
-//
-//        try {
-//
-//            assertNull(service.generateBittingList(configs.toString()));
-//
-//        } catch (ProgressionServiceException ex) {
-//
-//            fail(ex.getMessage());
-//        }
-//    }
+    @Test
+    public void testGenerateBittingList_Logged() {
+
+        try {
+
+            assertNull(service.generateBittingList(configs.toString()));
+
+        } catch (ProgressionServiceException ex) {
+
+            fail(ex.getMessage());
+        }
+    }
 }

@@ -1,19 +1,21 @@
 package com.eames.masterkey.model;
 
 /**
- * This abstract class is the base class for all bitting group classes.
+ * This represents a bitting group.
+ *
+ * A bitting group consists of a master key and an array of {@link BittingNode}s.
  */
-public abstract class BittingGroup<T>
-        implements HasMaster, HasChildren<T> {
+public class BittingGroup
+        implements BittingNode, HasMaster, HasChildren<BittingNode> {
 
     // The group's master key.
     private int[] master;
 
     // The child bitting groups
-    private T[] children;
+    private BittingNode[] children;
 
     /*
-        Implemented HasMaster operations
+        Implemented HasKey operations
      */
 
     @Override
@@ -31,12 +33,12 @@ public abstract class BittingGroup<T>
      */
 
     @Override
-    public T[] getChildren() {
+    public BittingNode[] getChildren() {
         return children;
     }
 
     @Override
-    public void setChildren(T[] children) {
+    public void setChildren(BittingNode[] children) {
         this.children = children;
     }
 }
