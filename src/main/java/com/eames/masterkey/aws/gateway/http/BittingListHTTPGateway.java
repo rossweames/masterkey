@@ -6,7 +6,7 @@ import com.eames.masterkey.service.progression.ProgressionServiceException;
 import com.eames.masterkey.service.progression.ProgressionServiceProviderException;
 import com.eames.masterkey.service.progression.ProgressionService;
 import com.eames.masterkey.service.progression.ProgressionServiceProvider;
-import com.eames.masterkey.service.progression.services.RandomGenericTotalProgressionService;
+import com.eames.masterkey.service.progression.services.totalposition.RandomGenericTotalPositionProgressionService;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,7 +41,7 @@ public class BittingListHTTPGateway
         // TODO: Need to generate the list of services.
 
         Set<ProgressionService> services = new HashSet<>();
-        services.add(new RandomGenericTotalProgressionService());
+        services.add(new RandomGenericTotalPositionProgressionService());
 
         // Instantiate the progression service provider passing it the list of services.
         serviceProvider = new ProgressionServiceProvider(services);

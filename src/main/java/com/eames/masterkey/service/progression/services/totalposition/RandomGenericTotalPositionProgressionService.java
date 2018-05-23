@@ -1,9 +1,9 @@
-package com.eames.masterkey.service.progression.services;
+package com.eames.masterkey.service.progression.services.totalposition;
 
-import com.eames.masterkey.model.BittingGroup;
 import com.eames.masterkey.model.BittingList;
 import com.eames.masterkey.model.KeyBitting;
 import com.eames.masterkey.service.ProcessingCapability;
+import com.eames.masterkey.service.ValidationException;
 import com.eames.masterkey.service.progression.ProgressionService;
 import com.eames.masterkey.service.progression.ProgressionServiceException;
 import com.google.gson.*;
@@ -12,15 +12,12 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Type;
-import java.util.Arrays;
-
 /**
  * This class is responsible for generating a bitting list using the given cut count, depth count, starting depth,
  * progression step, and MACS contained in the JSON configurations passed to it.
  *
  * The configurations are used to generate a random set of progression criteria that are, in turn, used to generate
- * the bitting list using the Total Progression method.
+ * the bitting list using the Total Position Progression method.
  *
  * It expects the configurations to have the following format:
  * {
@@ -31,7 +28,7 @@ import java.util.Arrays;
  *     macs : [4-9] // The Maximum Adjacent Cut Specification
  * }
  */
-public class RandomGenericTotalProgressionService
+public class RandomGenericTotalPositionProgressionService
         implements ProgressionService {
 
     /*
@@ -64,7 +61,7 @@ public class RandomGenericTotalProgressionService
     private static final int MACS_MAX = 10;
 
     // Initialize the Log4j logger.
-    private static final Logger logger = LogManager.getLogger(RandomGenericTotalProgressionService.class);
+    private static final Logger logger = LogManager.getLogger(RandomGenericTotalPositionProgressionService.class);
 
     /*
      * Overridden {@link ProgressionService} operations
@@ -272,37 +269,56 @@ public class RandomGenericTotalProgressionService
         if (canProcessConfigs(configs) == ProcessingCapability.NO)
             throw new ProgressionServiceException("Configurations not valid for this service.");
 
-        // TODO: Need to generate the real bitting list.
+        try {
 
-        BittingList bittingList = new BittingList();
-        bittingList.setSource(getName());
-        bittingList.setMaster(new int[] {3, 5, 4, 2, 1, 5});
+            // TODO: Need to generate the random progression criteria from the configs.
 
-        KeyBitting[] keyBittings = new KeyBitting[4];
-        keyBittings[0] = new KeyBitting(new int[] {1, 5, 4, 2, 1, 5});
-        keyBittings[1] = new KeyBitting(new int[] {5, 5, 4, 2, 1, 5});
-        keyBittings[2] = new KeyBitting(new int[] {7, 5, 4, 2, 1, 5});
-        keyBittings[3] = new KeyBitting(new int[] {9, 5, 4, 2, 1, 5});
-        bittingList.setChildren(keyBittings);
+            // Build the progression criteria object from the randomly generated criteria.
+            TotalPositionProgressionCriteria criteria = new TotalPositionProgressionCriteria.Builder()
 
-        /*
-         * Construct a gson instance using the gson builder.
-         * Specify that int arrays should be serialized as strings.
-         */
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(int[].class, (JsonSerializer<int[]>) (src, type, jsonSerializationContext) -> {
-                    StringBuilder sb = new StringBuilder();
-                    for (int v : src)
-                        sb.append(v);
-                    return new JsonPrimitive(sb.toString());
-                })
-                .create();
+                    // TODO: Need to set the progression criteria into the builder.
 
-        // Serialize the bitting list to JSON.
-        String jsonBittingListStr = gson.toJson(bittingList);
+                    .setMasterCuts(new int[] {3, 5, 2, 1, 3})
+                    .setProgressionSteps(new int[][] { })
+                    .setProgressionSequence(new int[] {1, 2, 3, 4, 5})
 
-        // Return the JSON bitting list.
-        return jsonBittingListStr;
+                    // Throws: ValidationException
+                    .build();
+
+            // Construct a progression service.
+            TotalPositionProgressionService service = new TotalPositionProgressionService();
+
+            // Generate the bitting list.
+            // Throws: ProgressionServiceException
+            BittingList bittingList = service.generateBittingList(criteria);
+
+            // Set this service's name into the bitting list.
+            bittingList.setSource(getName());
+
+            /*
+             * Construct a gson instance using the gson builder.
+             * Specify that int arrays should be serialized as strings.
+             */
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(int[].class, (JsonSerializer<int[]>) (src, type, jsonSerializationContext) -> {
+                        StringBuilder sb = new StringBuilder();
+                        for (int v : src)
+                            sb.append(v);
+                        return new JsonPrimitive(sb.toString());
+                    })
+                    .create();
+
+            // Serialize the bitting list to JSON.
+            String jsonBittingListStr = gson.toJson(bittingList);
+
+            // Return the JSON bitting list.
+            return jsonBittingListStr;
+
+        } catch (ValidationException ex) {
+
+            logger.error("The progression criteria are not valid. Cause: {}", ex.getMessage());
+            throw new ProgressionServiceException(ex.getMessage());
+        }
     }
 
     @Override

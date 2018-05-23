@@ -2,6 +2,7 @@ package com.eames.masterkey.service.progression.services;
 
 import com.eames.masterkey.service.ProcessingCapability;
 import com.eames.masterkey.service.progression.ProgressionServiceException;
+import com.eames.masterkey.service.progression.services.totalposition.RandomGenericTotalPositionProgressionService;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
@@ -10,12 +11,12 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * This class tests the {@link RandomGenericTotalProgressionService} class.
+ * This class tests the {@link RandomGenericTotalPositionProgressionService} class.
  */
-public class RandomGenericTotalProgressionServiceTest {
+public class RandomGenericTotalPositionProgressionServiceTest {
 
     // The progression service to test
-    private RandomGenericTotalProgressionService service;
+    private RandomGenericTotalPositionProgressionService service;
 
     // A set of valid configs for testing
     private JSONObject configs;
@@ -27,7 +28,7 @@ public class RandomGenericTotalProgressionServiceTest {
     public void setUp() {
 
         // Create the service.
-        service = new RandomGenericTotalProgressionService();
+        service = new RandomGenericTotalPositionProgressionService();
 
         // Create the configs.
         configs = new JSONObject();
@@ -381,16 +382,16 @@ public class RandomGenericTotalProgressionServiceTest {
 
     // TODO: Need more generateBittingList() tests.
 
-    @Test
-    public void testGenerateBittingList_Logged() {
-
-        try {
-
-            assertNull(service.generateBittingList(configs.toString()));
-
-        } catch (ProgressionServiceException ex) {
-
-            fail(ex.getMessage());
-        }
-    }
+//    @Test
+//    public void testGenerateBittingList_Logged() {
+//
+//        try {
+//
+//            assertNull(service.generateBittingList(configs.toString()));
+//
+//        } catch (ProgressionServiceException ex) {
+//
+//            fail(ex.getMessage());
+//        }
+//    }
 }

@@ -19,6 +19,17 @@ public class KeyBitting
     }
 
     /*
+        Implemented BittingNode operations
+     */
+
+    @Override
+    public boolean hasGroups() {
+
+        // BittingGroups never have child groups.
+        return false;
+    }
+
+    /*
         Implemented HasKey operations
      */
 

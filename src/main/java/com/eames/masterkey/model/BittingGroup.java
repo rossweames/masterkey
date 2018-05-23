@@ -6,13 +6,24 @@ package com.eames.masterkey.model;
  * A bitting group consists of a master key and an array of {@link BittingNode}s.
  */
 public class BittingGroup
-        implements BittingNode, HasMaster, HasChildren<BittingNode> {
+        implements BittingNode, HasMaster, HasGroups {
 
     // The group's master key.
     private int[] master;
 
     // The child bitting groups
-    private BittingNode[] children;
+    private BittingNode[] groups;
+
+    /*
+        Implemented BittingNode operations
+     */
+
+    @Override
+    public boolean hasGroups() {
+
+        // BittingGroups always have child groups.
+        return true;
+    }
 
     /*
         Implemented HasKey operations
@@ -29,16 +40,16 @@ public class BittingGroup
     }
 
     /*
-        Implemented HasChildren operations
+        Implemented HasGroups operations
      */
 
     @Override
-    public BittingNode[] getChildren() {
-        return children;
+    public BittingNode[] getGroups() {
+        return groups;
     }
 
     @Override
-    public void setChildren(BittingNode[] children) {
-        this.children = children;
+    public void setGroups(BittingNode[] groups) {
+        this.groups = groups;
     }
 }

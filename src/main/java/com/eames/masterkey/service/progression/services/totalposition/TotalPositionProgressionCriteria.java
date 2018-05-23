@@ -1,17 +1,17 @@
-package com.eames.masterkey.service.progression;
+package com.eames.masterkey.service.progression.services.totalposition;
 
 import com.eames.masterkey.service.ValidationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * This class represents the set of configurations required to generate
- * a master key bitting list using a Total Progression technique.
+ * This class represents the set of criteria required to generate a
+ * master key bitting list using a Total Position Progression technique.
  */
-public class TotalProgressionConfigs {
+public class TotalPositionProgressionCriteria {
 
     // Initialize the Log4j logger.
-    private static final Logger logger = LogManager.getLogger(TotalProgressionConfigs.class);
+    private static final Logger logger = LogManager.getLogger(TotalPositionProgressionCriteria.class);
 
     // The master key cuts
     private final int[] masterCuts;
@@ -31,7 +31,7 @@ public class TotalProgressionConfigs {
      * @param progressionSteps the progression steps to set
      * @param progressionSequence the progression sequence to set
      */
-    private TotalProgressionConfigs(int[] masterCuts, int[][] progressionSteps, int[] progressionSequence) {
+    private TotalPositionProgressionCriteria(int[] masterCuts, int[][] progressionSteps, int[] progressionSequence) {
 
         this.masterCuts = masterCuts;
         this.progressionSteps = progressionSteps;
@@ -66,7 +66,7 @@ public class TotalProgressionConfigs {
     }
 
     /**
-     * This class builds {@link TotalProgressionConfigs} objects.
+     * This class builds {@link TotalPositionProgressionCriteria} objects.
      * All objects built by this builder have been validated.
      */
     public static class Builder {
@@ -269,14 +269,14 @@ public class TotalProgressionConfigs {
         }
 
         /**
-         * Builds a {@link TotalProgressionConfigs} object from the
+         * Builds a {@link TotalPositionProgressionCriteria} object from the
          * attributes that have been set into it.
          *
-         * @return the newly constructed {@link TotalProgressionConfigs} object.
+         * @return the newly constructed {@link TotalPositionProgressionCriteria} object.
          * @throws ValidationException if any of the attributes are
          * missing or invalid
          */
-        public TotalProgressionConfigs build()
+        public TotalPositionProgressionCriteria build()
             throws ValidationException {
 
             // Validate the attributes.
@@ -284,7 +284,7 @@ public class TotalProgressionConfigs {
             validate();
 
             // Construct and return the configs.
-            return new TotalProgressionConfigs(masterCuts, progressionSteps, progressionSequence);
+            return new TotalPositionProgressionCriteria(masterCuts, progressionSteps, progressionSequence);
         }
     }
 }
