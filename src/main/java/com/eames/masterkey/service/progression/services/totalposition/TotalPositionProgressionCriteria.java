@@ -1,41 +1,69 @@
-package com.eames.masterkey.service.progression;
+package com.eames.masterkey.service.progression.services.totalposition;
 
 import com.eames.masterkey.service.ValidationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * This class represents the set of configurations required to generate
- * a master key bitting list using a Total Progression technique.
+ * This class represents the set of criteria required to generate a
+ * master key bitting list using a Total Position Progression technique.
  */
-public class TotalProgressionConfigs {
+public class TotalPositionProgressionCriteria {
 
     // Initialize the Log4j logger.
-    private static final Logger logger = LogManager.getLogger(TotalProgressionConfigs.class);
+    private static final Logger logger = LogManager.getLogger(TotalPositionProgressionCriteria.class);
+
+    // The service that generated the bitting list.
+    private final String source;
+
+    // The Maximum Adjacent Cut Specification (MACS)
+    private final int macs;
 
     // The master key cuts
-    private int[] masterCuts;
+    private final int[] masterCuts;
 
     // The progression steps
-    private int[][] progressionSteps;
+    private final int[][] progressionSteps;
 
     // The progression sequence
-    private int[] progressionSequence;
+    private final int[] progressionSequence;
 
     /**
      * Constructor
      * This constructor has been declared private so that it can only
      * be called from within the builder.
      *
+     * @param source the service that generated the bitting list
+     * @param macs the MACS value to set
      * @param masterCuts the master cuts to set
      * @param progressionSteps the progression steps to set
      * @param progressionSequence the progression sequence to set
      */
-    private TotalProgressionConfigs(int[] masterCuts, int[][] progressionSteps, int[] progressionSequence) {
+    private TotalPositionProgressionCriteria(String source, int macs, int[] masterCuts, int[][] progressionSteps, int[] progressionSequence) {
 
+        this.source = source;
+        this.macs = macs;
         this.masterCuts = masterCuts;
         this.progressionSteps = progressionSteps;
         this.progressionSequence = progressionSequence;
+    }
+
+    /**
+     * Gets the source.
+     *
+     * @return the source (can be null)
+     */
+    public String getSource() {
+        return source;
+    }
+
+    /**
+     * Gets the MACS.
+     *
+     * @return the MACS
+     */
+    public int getMacs() {
+        return macs;
     }
 
     /**
@@ -66,17 +94,45 @@ public class TotalProgressionConfigs {
     }
 
     /**
-     * This class builds {@link TotalProgressionConfigs} objects.
+     * This class builds {@link TotalPositionProgressionCriteria} objects.
      * All objects built by this builder have been validated.
      */
     public static class Builder {
 
         /**
-         * The attributes to be used to buikd the configs
+         * The attributes to be used to build the configs
          */
+        private String source;
+        private int macs;
         private int[] masterCuts;
         private int[][] progressionSteps;
         private int[] progressionSequence;
+
+        /**
+         * Sets the source.
+         * Returns the {@link Builder} so these operations can be chained.
+         *
+         * @param source the new source
+         * @return this builder
+         */
+        public Builder setSource(String source) {
+
+            this.source = source;
+            return this;
+        }
+
+        /**
+         * Sets the MACS.
+         * Returns the {@link Builder} so these operations can be chained.
+         *
+         * @param macs the new MACS
+         * @return this builder
+         */
+        public Builder setMACS(int macs) {
+
+            this.macs = macs;
+            return this;
+        }
 
         /**
          * Sets the master cuts.
@@ -126,7 +182,7 @@ public class TotalProgressionConfigs {
         private void validate ()
             throws ValidationException {
 
-            /**
+            /*
              * Make sure we have all the pieces.
              */
             if (masterCuts == null) {
@@ -148,7 +204,17 @@ public class TotalProgressionConfigs {
                 throw new ValidationException(MISSING_PROGRESSION_SEQUENCE);
             }
 
-            /**
+            /*
+             * The MACS must be greater than zero.
+             */
+            if (macs <= 0) {
+
+                final String MACS_TOO_SMALL= "The MACS must be greater than 0.";
+                logger.error(MACS_TOO_SMALL + " (" + macs + ")");
+                throw new ValidationException(MACS_TOO_SMALL);
+            }
+
+            /*
              * The master key must have at least one column.
              */
             if (masterCuts.length < 1) {
@@ -158,15 +224,15 @@ public class TotalProgressionConfigs {
                 throw new ValidationException(MASTER_EMPTY);
             }
 
-            /**
+            /*
              * All the configs must have the same number of cuts.
              */
-            for (int row = 0; row < progressionSteps.length; row++) {
-                if (progressionSteps[row].length != masterCuts.length) {
+            for (int[] row : progressionSteps) {
+                if (row.length != masterCuts.length) {
 
                     final String PROG_STEP_CUTS_DONT_MATCH_MASTER_CUTS = "The progression steps do not have the same " +
                             "number of cuts as the master key.";
-                    logger.error(PROG_STEP_CUTS_DONT_MATCH_MASTER_CUTS + " (" + progressionSteps[row].length + ", " +
+                    logger.error(PROG_STEP_CUTS_DONT_MATCH_MASTER_CUTS + " (" + row.length + ", " +
                             masterCuts.length + ")");
                     throw new ValidationException(PROG_STEP_CUTS_DONT_MATCH_MASTER_CUTS);
                 }
@@ -180,7 +246,7 @@ public class TotalProgressionConfigs {
                 throw new ValidationException(PROG_SEQ_CUTS_DONT_MATCH_MASTER_CUTS);
             }
 
-            /**
+            /*
              * The master key must not have any negative depths.
              */
             for (int col = 0; col < masterCuts.length; col++) {
@@ -192,7 +258,7 @@ public class TotalProgressionConfigs {
                 }
             }
 
-            /**
+            /*
              * Make sure that the progression steps do not contain any of the master key depths in the same column.
              */
             for (int col = 0; col < progressionSteps[0].length; col++) {
@@ -236,7 +302,7 @@ public class TotalProgressionConfigs {
                }
             }
 
-            /**
+            /*
              * The progression sequence must contain exactly every position between 1 and the number of cuts.
              */
             for (int col = 0; col < progressionSequence.length; col++) {
@@ -269,14 +335,14 @@ public class TotalProgressionConfigs {
         }
 
         /**
-         * Builds a {@link TotalProgressionConfigs} object from the
+         * Builds a {@link TotalPositionProgressionCriteria} object from the
          * attributes that have been set into it.
          *
-         * @return the newly constructed {@link TotalProgressionConfigs} object.
+         * @return the newly constructed {@link TotalPositionProgressionCriteria} object.
          * @throws ValidationException if any of the attributes are
          * missing or invalid
          */
-        public TotalProgressionConfigs build()
+        public TotalPositionProgressionCriteria build()
             throws ValidationException {
 
             // Validate the attributes.
@@ -284,7 +350,7 @@ public class TotalProgressionConfigs {
             validate();
 
             // Construct and return the configs.
-            return new TotalProgressionConfigs(masterCuts, progressionSteps, progressionSequence);
+            return new TotalPositionProgressionCriteria(source, macs, masterCuts, progressionSteps, progressionSequence);
         }
     }
 }
