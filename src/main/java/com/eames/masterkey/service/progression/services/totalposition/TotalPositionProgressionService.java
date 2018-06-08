@@ -18,6 +18,8 @@ public class TotalPositionProgressionService {
     /**
      * Generates a bitting list using the Total Position Progression technique.
      *
+     * TODO: Need .generateBittingList() tests.
+     *
      * @param criteria the progression criteria
      * @return the newly generated {@link BittingList}
      * @throws ProgressionServiceException if any error occurs
@@ -33,8 +35,8 @@ public class TotalPositionProgressionService {
         }
 
         /*
-         * No need to validate the configurations because they use a builder that guarantees
-         * any configs generated are valid.
+         * No need to validate the criteria because they use a builder that guarantees
+         * any criteria generated are valid.
          */
 
         // TODO: Need to actually generate the bitting list.

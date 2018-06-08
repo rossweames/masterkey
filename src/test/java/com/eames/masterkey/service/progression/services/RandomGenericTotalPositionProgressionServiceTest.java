@@ -380,7 +380,7 @@ public class RandomGenericTotalPositionProgressionServiceTest {
         }
     }
 
-    // TODO: Need more generateBittingList() tests.
+    // TODO: Need more .generateBittingList() tests.
 
 //    @Test
 //    public void testGenerateBittingList_Logged() {

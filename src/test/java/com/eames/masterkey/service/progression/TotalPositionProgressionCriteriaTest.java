@@ -19,6 +19,7 @@ public class TotalPositionProgressionCriteriaTest {
     /**
      * The test constants
      */
+    private static final int TEST_MACS = 4;
     private static final int[] TEST_MASTER_CUTS = {1, 3, 5, 6, 4, 2};
     private static final int[][] TEST_PROGRESSION_STEPS = {
             {2, 1, 1, 1, 1, 1},
@@ -42,6 +43,7 @@ public class TotalPositionProgressionCriteriaTest {
 
         // Construct the builder and fill it with valid values.
         configBuilder = new TotalPositionProgressionCriteria.Builder()
+                .setMACS(TEST_MACS)
                 .setMasterCuts(TEST_MASTER_CUTS)
                 .setProgressionSteps(TEST_PROGRESSION_STEPS)
                 .setProgressionSequence(TEST_PROGRESSION_SEQUENCE);
@@ -77,6 +79,48 @@ public class TotalPositionProgressionCriteriaTest {
     }
 
     /**
+     * MACS tests
+     */
+
+    @Test
+    public void testBuild_NegativeMACS() {
+
+        try {
+
+            int macs =  -1;
+
+            configBuilder
+                    .setMACS(macs)
+                    .build();
+
+            fail();
+
+        } catch (ValidationException e) {
+
+            // Expected results
+        }
+    }
+
+    @Test
+    public void testBuild_ZeroMACS() {
+
+        try {
+
+            int macs =  0;
+
+            configBuilder
+                    .setMACS(macs)
+                    .build();
+
+            fail();
+
+        } catch (ValidationException e) {
+
+            // Expected results
+        }
+    }
+
+    /**
      * Master key tests
      */
 
@@ -86,36 +130,6 @@ public class TotalPositionProgressionCriteriaTest {
         try {
 
             configBuilder.setMasterCuts(null).build();
-
-            fail();
-
-        } catch (ValidationException e) {
-
-            // Expected results
-        }
-    }
-
-    @Test
-    public void testBuild_MissingProgressionSteps() {
-
-        try {
-
-            configBuilder.setProgressionSteps(null).build();
-
-            fail();
-
-        } catch (ValidationException e) {
-
-            // Expected results
-        }
-    }
-
-    @Test
-    public void testBuild_MissingProgressionSequence() {
-
-        try {
-
-            configBuilder.setProgressionSequence(null).build();
 
             fail();
 
@@ -186,6 +200,21 @@ public class TotalPositionProgressionCriteriaTest {
     /**
      * Progression steps tests
      */
+
+    @Test
+    public void testBuild_MissingProgressionSteps() {
+
+        try {
+
+            configBuilder.setProgressionSteps(null).build();
+
+            fail();
+
+        } catch (ValidationException e) {
+
+            // Expected results
+        }
+    }
 
     @Test
     public void testBuild_ProgressionStepsLessThanMasterCut() {
@@ -311,7 +340,22 @@ public class TotalPositionProgressionCriteriaTest {
      * Progression sequence tests
      */
 
-     @Test
+    @Test
+    public void testBuild_MissingProgressionSequence() {
+
+        try {
+
+            configBuilder.setProgressionSequence(null).build();
+
+            fail();
+
+        } catch (ValidationException e) {
+
+            // Expected results
+        }
+    }
+
+    @Test
     public void testBuild_ProgressionSequenceLessThanMasterCut() {
 
         try {
@@ -350,7 +394,7 @@ public class TotalPositionProgressionCriteriaTest {
     }
 
     @Test
-    public void testBuild_ProgressionSequenceToiSmallPosition() {
+    public void testBuild_ProgressionSequenceTooSmallPosition() {
 
         try {
 

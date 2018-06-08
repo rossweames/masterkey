@@ -13,6 +13,12 @@ public class TotalPositionProgressionCriteria {
     // Initialize the Log4j logger.
     private static final Logger logger = LogManager.getLogger(TotalPositionProgressionCriteria.class);
 
+    // The service that generated the bitting list.
+    private final String source;
+
+    // The Maximum Adjacent Cut Specification (MACS)
+    private final int macs;
+
     // The master key cuts
     private final int[] masterCuts;
 
@@ -27,15 +33,37 @@ public class TotalPositionProgressionCriteria {
      * This constructor has been declared private so that it can only
      * be called from within the builder.
      *
+     * @param source the service that generated the bitting list
+     * @param macs the MACS value to set
      * @param masterCuts the master cuts to set
      * @param progressionSteps the progression steps to set
      * @param progressionSequence the progression sequence to set
      */
-    private TotalPositionProgressionCriteria(int[] masterCuts, int[][] progressionSteps, int[] progressionSequence) {
+    private TotalPositionProgressionCriteria(String source, int macs, int[] masterCuts, int[][] progressionSteps, int[] progressionSequence) {
 
+        this.source = source;
+        this.macs = macs;
         this.masterCuts = masterCuts;
         this.progressionSteps = progressionSteps;
         this.progressionSequence = progressionSequence;
+    }
+
+    /**
+     * Gets the source.
+     *
+     * @return the source (can be null)
+     */
+    public String getSource() {
+        return source;
+    }
+
+    /**
+     * Gets the MACS.
+     *
+     * @return the MACS
+     */
+    public int getMacs() {
+        return macs;
     }
 
     /**
@@ -74,9 +102,37 @@ public class TotalPositionProgressionCriteria {
         /**
          * The attributes to be used to build the configs
          */
+        private String source;
+        private int macs;
         private int[] masterCuts;
         private int[][] progressionSteps;
         private int[] progressionSequence;
+
+        /**
+         * Sets the source.
+         * Returns the {@link Builder} so these operations can be chained.
+         *
+         * @param source the new source
+         * @return this builder
+         */
+        public Builder setSource(String source) {
+
+            this.source = source;
+            return this;
+        }
+
+        /**
+         * Sets the MACS.
+         * Returns the {@link Builder} so these operations can be chained.
+         *
+         * @param macs the new MACS
+         * @return this builder
+         */
+        public Builder setMACS(int macs) {
+
+            this.macs = macs;
+            return this;
+        }
 
         /**
          * Sets the master cuts.
@@ -146,6 +202,16 @@ public class TotalPositionProgressionCriteria {
                 final String MISSING_PROGRESSION_SEQUENCE = "The progression sequence is missing.";
                 logger.error(MISSING_PROGRESSION_SEQUENCE);
                 throw new ValidationException(MISSING_PROGRESSION_SEQUENCE);
+            }
+
+            /*
+             * The MACS must be greater than zero.
+             */
+            if (macs <= 0) {
+
+                final String MACS_TOO_SMALL= "The MACS must be greater than 0.";
+                logger.error(MACS_TOO_SMALL + " (" + macs + ")");
+                throw new ValidationException(MACS_TOO_SMALL);
             }
 
             /*
@@ -284,7 +350,7 @@ public class TotalPositionProgressionCriteria {
             validate();
 
             // Construct and return the configs.
-            return new TotalPositionProgressionCriteria(masterCuts, progressionSteps, progressionSequence);
+            return new TotalPositionProgressionCriteria(source, macs, masterCuts, progressionSteps, progressionSequence);
         }
     }
 }
