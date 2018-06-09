@@ -35,7 +35,7 @@ public class RandomGenericTotalPositionProgressionServiceTest {
         configs.put("cutCount", 6);
         configs.put("depthCount", 10);
         configs.put("startingDepth", 0);
-        configs.put("progressionStep", 2);
+        configs.put("doubleStepProgression", true);
         configs.put("macs", 4);
    }
 
@@ -247,7 +247,7 @@ public class RandomGenericTotalPositionProgressionServiceTest {
     @Test
     public void testCanProcessConfigs_MissingProgressionStep() {
 
-        configs.remove("progressionStep");
+        configs.remove("doubleStepProgression");
         ProcessingCapability capability = service.canProcessConfigs(configs.toString());
 
         assertEquals(ProcessingCapability.NO, capability);
@@ -256,43 +256,7 @@ public class RandomGenericTotalPositionProgressionServiceTest {
     @Test
     public void testCanProcessConfigs_WrongTypeProgressionStep() {
 
-        configs.put("progressionStep", "2");
-        ProcessingCapability capability = service.canProcessConfigs(configs.toString());
-
-        assertEquals(ProcessingCapability.NO, capability);
-    }
-
-    @Test
-    public void testCanProcessConfigs_TooSmallProgressionStep() {
-
-        configs.put("progressionStep", 0);
-        ProcessingCapability capability = service.canProcessConfigs(configs.toString());
-
-        assertEquals(ProcessingCapability.NO, capability);
-    }
-
-    @Test
-    public void testCanProcessConfigs_MinProgressionStep() {
-
-        configs.put("progressionStep", 1);
-        ProcessingCapability capability = service.canProcessConfigs(configs.toString());
-
-        assertEquals(ProcessingCapability.YES, capability);
-    }
-
-    @Test
-    public void testCanProcessConfigs_MaxProgressionStep() {
-
-        configs.put("progressionStep", 2);
-        ProcessingCapability capability = service.canProcessConfigs(configs.toString());
-
-        assertEquals(ProcessingCapability.YES, capability);
-    }
-
-    @Test
-    public void testCanProcessConfigs_TooLargeProgressionStep() {
-
-        configs.put("progressionStep", 3);
+        configs.put("doubleStepProgression", "2");
         ProcessingCapability capability = service.canProcessConfigs(configs.toString());
 
         assertEquals(ProcessingCapability.NO, capability);
