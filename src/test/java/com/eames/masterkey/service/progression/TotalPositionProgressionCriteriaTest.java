@@ -1,6 +1,7 @@
 package com.eames.masterkey.service.progression;
 
 import com.eames.masterkey.service.ValidationException;
+import com.eames.masterkey.service.progression.services.totalposition.TotalPositionProgressionCriteria;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,13 +12,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 /**
- * This class tests the {@link TotalProgressionConfigs} class.
+ * This class tests the {@link TotalPositionProgressionCriteria} class.
  */
-public class TotalProgressionConfigsTest {
+public class TotalPositionProgressionCriteriaTest {
 
     /**
      * The test constants
      */
+    private static final int TEST_MACS = 4;
     private static final int[] TEST_MASTER_CUTS = {1, 3, 5, 6, 4, 2};
     private static final int[][] TEST_PROGRESSION_STEPS = {
             {2, 1, 1, 1, 1, 1},
@@ -31,7 +33,7 @@ public class TotalProgressionConfigsTest {
     /**
      * The config builder.
      */
-    private TotalProgressionConfigs.Builder configBuilder;
+    private TotalPositionProgressionCriteria.Builder configBuilder;
 
     /**
      * Gets called before each test.
@@ -40,7 +42,8 @@ public class TotalProgressionConfigsTest {
     public void setUp() {
 
         // Construct the builder and fill it with valid values.
-        configBuilder = new TotalProgressionConfigs.Builder()
+        configBuilder = new TotalPositionProgressionCriteria.Builder()
+                .setMACS(TEST_MACS)
                 .setMasterCuts(TEST_MASTER_CUTS)
                 .setProgressionSteps(TEST_PROGRESSION_STEPS)
                 .setProgressionSequence(TEST_PROGRESSION_SEQUENCE);
@@ -65,13 +68,55 @@ public class TotalProgressionConfigsTest {
 
         try {
 
-            TotalProgressionConfigs configs = configBuilder.build();
+            TotalPositionProgressionCriteria criteria = configBuilder.build();
 
-            assertNotNull(configs);
+            assertNotNull(criteria);
 
         } catch (ValidationException e) {
 
             fail(e.getMessage());
+        }
+    }
+
+    /**
+     * MACS tests
+     */
+
+    @Test
+    public void testBuild_NegativeMACS() {
+
+        try {
+
+            int macs =  -1;
+
+            configBuilder
+                    .setMACS(macs)
+                    .build();
+
+            fail();
+
+        } catch (ValidationException e) {
+
+            // Expected results
+        }
+    }
+
+    @Test
+    public void testBuild_ZeroMACS() {
+
+        try {
+
+            int macs =  0;
+
+            configBuilder
+                    .setMACS(macs)
+                    .build();
+
+            fail();
+
+        } catch (ValidationException e) {
+
+            // Expected results
         }
     }
 
@@ -85,36 +130,6 @@ public class TotalProgressionConfigsTest {
         try {
 
             configBuilder.setMasterCuts(null).build();
-
-            fail();
-
-        } catch (ValidationException e) {
-
-            // Expected results
-        }
-    }
-
-    @Test
-    public void testBuild_MissingProgressionSteps() {
-
-        try {
-
-            configBuilder.setProgressionSteps(null).build();
-
-            fail();
-
-        } catch (ValidationException e) {
-
-            // Expected results
-        }
-    }
-
-    @Test
-    public void testBuild_MissingProgressionSequence() {
-
-        try {
-
-            configBuilder.setProgressionSequence(null).build();
 
             fail();
 
@@ -148,13 +163,13 @@ public class TotalProgressionConfigsTest {
 
         try {
 
-            TotalProgressionConfigs configs = configBuilder
+            TotalPositionProgressionCriteria criteria = configBuilder
                     .setMasterCuts(new int[] {4})
                     .setProgressionSteps(new int[][] {{6}})
                     .setProgressionSequence(new int[] {1})
                     .build();
 
-            assertNotNull(configs);
+            assertNotNull(criteria);
 
         } catch (ValidationException e) {
 
@@ -185,6 +200,21 @@ public class TotalProgressionConfigsTest {
     /**
      * Progression steps tests
      */
+
+    @Test
+    public void testBuild_MissingProgressionSteps() {
+
+        try {
+
+            configBuilder.setProgressionSteps(null).build();
+
+            fail();
+
+        } catch (ValidationException e) {
+
+            // Expected results
+        }
+    }
 
     @Test
     public void testBuild_ProgressionStepsLessThanMasterCut() {
@@ -229,13 +259,13 @@ public class TotalProgressionConfigsTest {
 
         try {
 
-            TotalProgressionConfigs configs = configBuilder
+            TotalPositionProgressionCriteria criteria = configBuilder
                     .setMasterCuts(new int[] {4})
                     .setProgressionSteps(new int[][] {{4}})
                     .setProgressionSequence(new int[] {1})
                     .build();
 
-            assertNotNull(configs);
+            assertNotNull(criteria);
 
         } catch (ValidationException e) {
 
@@ -248,7 +278,7 @@ public class TotalProgressionConfigsTest {
 
         try {
 
-            TotalProgressionConfigs configs = configBuilder
+            TotalPositionProgressionCriteria criteria = configBuilder
                     .setMasterCuts(new int[] {2, 1})
                     .setProgressionSteps(new int[][] {
                             {1, 1},
@@ -256,7 +286,7 @@ public class TotalProgressionConfigsTest {
                     .setProgressionSequence(new int[] {1, 2})
                     .build();
 
-            assertNotNull(configs);
+            assertNotNull(criteria);
 
         } catch (ValidationException e) {
 
@@ -310,7 +340,22 @@ public class TotalProgressionConfigsTest {
      * Progression sequence tests
      */
 
-     @Test
+    @Test
+    public void testBuild_MissingProgressionSequence() {
+
+        try {
+
+            configBuilder.setProgressionSequence(null).build();
+
+            fail();
+
+        } catch (ValidationException e) {
+
+            // Expected results
+        }
+    }
+
+    @Test
     public void testBuild_ProgressionSequenceLessThanMasterCut() {
 
         try {
@@ -349,7 +394,7 @@ public class TotalProgressionConfigsTest {
     }
 
     @Test
-    public void testBuild_ProgressionSequenceToiSmallPosition() {
+    public void testBuild_ProgressionSequenceTooSmallPosition() {
 
         try {
 
