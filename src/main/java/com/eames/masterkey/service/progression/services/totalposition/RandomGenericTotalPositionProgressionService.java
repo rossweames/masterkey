@@ -13,6 +13,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.stream.IntStream;
 
@@ -501,9 +502,6 @@ public class RandomGenericTotalPositionProgressionService
          * Generate the master cuts.
          */
 
-        // TODO: Need to generate the master cuts from the configs.
-        int[] masterCuts = new int[] {3, 5, 2, 1, 3};
-
         // Get the cut count.
         // Throws: JSONException
         int cutCount = (Integer) jsonConfigs.get(CUT_COUNT_KEY);
@@ -516,9 +514,22 @@ public class RandomGenericTotalPositionProgressionService
         // Throws: JSONException
         int startingDepth = (Integer) jsonConfigs.get(STARTING_DEPTH_KEY);
 
-//        // Generate the cuts using the random integer stream.
-//        int[] masterCuts = new int[cutCount];
-//        random.ints(startingDepth, depthCount + startingDepth);
+        /*
+         * Generate the master cuts using random integers.
+         * All cuts must be in the range: [startingDepth, depthCount + startingDepth - 1]
+         * Adjacent cuts must honor the MACS.
+         */
+        int maxDepth = depthCount + startingDepth - 1;
+        int[] masterCuts = new int[cutCount];
+        masterCuts[0] = random.nextInt(depthCount) + startingDepth;
+        for (int cut = 1; cut < cutCount; cut++) {
+
+            int lastVal = masterCuts[cut - 1];
+            int minVal = Integer.max(startingDepth, lastVal - macs);
+            int maxVal = Integer.min(lastVal + macs, maxDepth);
+            masterCuts[cut] = random.nextInt(maxVal - minVal + 1) + minVal;
+        }
+        logger.debug("Generated the master key: {}", Arrays.toString(masterCuts));
 
         /*
          * Generate the progression sequence.
