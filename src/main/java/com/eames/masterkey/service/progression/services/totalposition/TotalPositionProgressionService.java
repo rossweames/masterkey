@@ -41,8 +41,11 @@ public class TotalPositionProgressionService {
 
         // TODO: Need to actually generate the bitting list.
 
+        // The bitting list to construct and return.
         BittingList bittingList = new BittingList();
-        bittingList.setMaster(new int[] {3, 5, 4, 2, 1, 5});
+
+        // Copy the master cuts directly from the criteria into the bitting list.
+        bittingList.setMaster(criteria.getMasterCuts());
 
         KeyBitting[] keyBittings = new KeyBitting[4];
         keyBittings[0] = new KeyBitting(new int[] {1, 5, 4, 2, 1, 5});
