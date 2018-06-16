@@ -1,5 +1,6 @@
 package com.eames.masterkey.service.progression.services.totalposition;
 
+import com.eames.masterkey.model.BittingGroup;
 import com.eames.masterkey.model.BittingList;
 import com.eames.masterkey.model.KeyBitting;
 import com.eames.masterkey.service.progression.ProgressionServiceException;
@@ -15,46 +16,169 @@ public class TotalPositionProgressionService {
     // Initialize the Log4j logger.
     private static final Logger logger = LogManager.getLogger(TotalPositionProgressionService.class);
 
+    // The master cuts come from the criteria passed to the constructor.
+    private int[] masterCuts;
+
+    // The progression steps come from the criteria passed to the constructor.
+    private int[][] progressionSteps;
+
+    // The progression sequence comes from the criteria passed to the constructor.
+    private int[] progressionSequence;
+
+    // The MACS comes from the criteria passed to the constructor.
+    private int macs;
+
+    // The cut count is calculated from the progression sequence.
+    private int cutCount;
+
+    // The step count is calculated from the progression sequence.
+    private int stepCount;
+
+    // The cut order is generated from the progression sequence.
+    private int[] cutOrder;
+
+    /**
+     * Constructor
+     *
+     * @param criteria the {@link TotalPositionProgressionCriteria} to use
+     */
+    public TotalPositionProgressionService(TotalPositionProgressionCriteria criteria) {
+
+        // Convert the criteria into the parts needed to generate the bitting list.
+        if (criteria != null) {
+
+            /*
+             * No need to validate the criteria because they use a builder that guarantees
+             * that all criteria it generates are valid.
+             */
+
+            // Get the master cuts.
+            masterCuts = criteria.getMasterCuts();
+            logger.debug("The master cuts: {}.", masterCuts);
+
+            // Get the progression steps.
+            progressionSteps = criteria.getProgressionSteps();
+            logger.debug("The progression steps: {}.", progressionSteps);
+
+            // Get the progression sequence.
+            progressionSequence = criteria.getProgressionSequence();
+            logger.debug("The progression sequence: {}.", progressionSequence);
+
+            // Get the MACS.
+            macs = criteria.getMacs();
+            logger.debug("The MACS: {}.", macs);
+
+            // Calculate the step count.
+            stepCount = progressionSteps.length;
+            logger.debug("The step count: {}.", stepCount);
+
+            // Calculate the cut count.
+            cutCount = progressionSequence.length;
+            logger.debug("The cut count: {}.", cutCount);
+
+            /**
+             * Generate the cut order array from the progression sequence.
+             * The cut order array determines the order in which the progression steps are applied during the progression
+             * process.
+             *
+             * e.g.:
+             *  [1, 2, 3, 4, 5] becomes [0, 1, 2, 3, 4]
+             *  [5, 4, 3, 2, 1] becomes [4, 3, 2, 1, 0]
+             *  [3, 5, 2, 1, 4] becomes [3, 2, 0, 4, 1]
+             */
+            cutOrder = new int[cutCount];
+            for (int cut = 0; cut < cutCount; cut++)
+                cutOrder[progressionSequence[cut] - 1] = cut;
+            logger.debug("The cut order: {}.", cutOrder);
+        }
+
+        // There are no criteria, so log an error
+        else
+            logger.error("No criteria were passed to the constructor.");
+    }
+
     /**
      * Generates a bitting list using the Total Position Progression technique.
      *
      * TODO: Need .generateBittingList() tests.
      *
-     * @param criteria the progression criteria
      * @return the newly generated {@link BittingList}
      * @throws ProgressionServiceException if any error occurs
      */
-    public BittingList generateBittingList(TotalPositionProgressionCriteria criteria)
+    public BittingList generateBittingList()
         throws ProgressionServiceException {
 
-        if (criteria == null) {
+        // Validate that the criteria have been loaded.
+        if (cutOrder == null) {
 
-            final String errorMessage = "No progression criteria provided.";
+            final String errorMessage = "Could not generate the bitting list; no progression criteria.";
             logger.error(errorMessage);
             throw new ProgressionServiceException(errorMessage);
         }
 
-        /*
-         * No need to validate the criteria because they use a builder that guarantees
-         * any criteria generated are valid.
-         */
-
-        // TODO: Need to actually generate the bitting list.
+        // Progress the system.
+        BittingGroup rootBittingGroup = doProgression();
 
         // The bitting list to construct and return.
         BittingList bittingList = new BittingList();
-
-        // Copy the master cuts directly from the criteria into the bitting list.
-        bittingList.setMaster(criteria.getMasterCuts());
-
-        KeyBitting[] keyBittings = new KeyBitting[4];
-        keyBittings[0] = new KeyBitting(new int[] {1, 5, 4, 2, 1, 5});
-        keyBittings[1] = new KeyBitting(new int[] {5, 5, 4, 2, 1, 5});
-        keyBittings[2] = new KeyBitting(new int[] {7, 5, 4, 2, 1, 5});
-        keyBittings[3] = new KeyBitting(new int[] {9, 5, 4, 2, 1, 5});
-        bittingList.setGroups(keyBittings);
+        bittingList.setRootBittingGroup(rootBittingGroup);
 
         // Return the bitting list.
         return bittingList;
+    }
+
+    /**
+     * Starts the progression to generate the bitting list.
+     * Creates the bitting list then recursively progresses all levels.
+     *
+     * @return the bitting list's root {@link BittingGroup}
+     */
+    private BittingGroup doProgression() {
+
+        // Instantiate the root bitting group
+        BittingGroup bittingGroup = new BittingGroup();
+
+        // Progress the system recursively, filling out the root bitting group.
+        progressBlock(0, bittingGroup);
+
+        // Return the filled-out root bitting group.
+        return bittingGroup;
+    }
+
+    /**
+     * Progresses the block with the given level.
+     *
+     * @param blockLevel the block level to progress
+     * @param bittingGroup the {@link BittingGroup} to fill out
+     */
+    private void progressBlock(int blockLevel, BittingGroup bittingGroup) {
+
+        // TODO: Need to progress the block.
+
+        if (blockLevel < cutCount)
+            progressBlock(blockLevel + 1, bittingGroup);
+        else
+            return;
+    }
+
+    /**
+     * Generates a {@link KeyBitting} for the given set of levels.
+     *
+     * @param levels the levels to use
+     * @return the newly generated key \
+     */
+    private KeyBitting generateKey(int[] levels) {
+
+        // Generate the key depths.
+        int[] depths = new int[cutCount];
+        for (int cut = 0; cut < cutCount; cut++)
+            depths[cut] = progressionSteps[levels[cut]][cut];
+
+        // Instantiate the key and test for a MACS violation.
+        KeyBitting keyBitting = new KeyBitting(depths);
+        keyBitting.testForMACSViolation(macs);
+
+        // Return the key.
+        return keyBitting;
     }
 }

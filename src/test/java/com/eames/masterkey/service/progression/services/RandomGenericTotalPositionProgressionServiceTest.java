@@ -1,5 +1,6 @@
 package com.eames.masterkey.service.progression.services;
 
+import com.eames.masterkey.model.BittingList;
 import com.eames.masterkey.service.ProcessingCapability;
 import com.eames.masterkey.service.progression.ProgressionServiceException;
 import com.eames.masterkey.service.progression.services.totalposition.RandomGenericTotalPositionProgressionService;
@@ -346,16 +347,17 @@ public class RandomGenericTotalPositionProgressionServiceTest {
 
     // TODO: Need more .generateBittingList() tests.
 
-//    @Test
-//    public void testGenerateBittingList_Logged() {
-//
-//        try {
-//
-//            assertNull(service.generateBittingList(configs.toString()));
-//
-//        } catch (ProgressionServiceException ex) {
-//
-//            fail(ex.getMessage());
-//        }
-//    }
+    @Test
+    public void testGenerateBittingList_() {
+
+        try {
+
+            String bittingList = service.generateBittingList(configs.toString());
+            assertNotNull(bittingList);
+
+        } catch (ProgressionServiceException ex) {
+
+            fail(ex.getMessage());
+        }
+    }
 }

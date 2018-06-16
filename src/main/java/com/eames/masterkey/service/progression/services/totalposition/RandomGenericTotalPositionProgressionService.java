@@ -109,11 +109,11 @@ public class RandomGenericTotalPositionProgressionService
         TotalPositionProgressionCriteria criteria = generateProgressionCriteria(jsonConfigs);
 
         // Construct a progression service.
-        TotalPositionProgressionService service = new TotalPositionProgressionService();
+        TotalPositionProgressionService service = new TotalPositionProgressionService(criteria);
 
         // Generate the bitting list.
         // Throws: ProgressionServiceException
-        BittingList bittingList = service.generateBittingList(criteria);
+        BittingList bittingList = service.generateBittingList();
 
         /*
          * Construct a gson instance using the gson builder.

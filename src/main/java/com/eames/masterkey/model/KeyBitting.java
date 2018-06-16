@@ -14,7 +14,6 @@ public class KeyBitting
     // Indicates that this key bitting has a MACS violation.
     private Boolean hasMACSViolation;
 
-
     /**
      * Constructor
      *
