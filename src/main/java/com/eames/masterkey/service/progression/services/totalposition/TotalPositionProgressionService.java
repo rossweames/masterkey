@@ -2,10 +2,14 @@ package com.eames.masterkey.service.progression.services.totalposition;
 
 import com.eames.masterkey.model.BittingGroup;
 import com.eames.masterkey.model.BittingList;
+import com.eames.masterkey.model.BittingNode;
 import com.eames.masterkey.model.KeyBitting;
 import com.eames.masterkey.service.progression.ProgressionServiceException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.security.Key;
+import java.util.Arrays;
 
 /**
  * This class is responsible for generating a bitting list using the Total Position Progression
@@ -54,15 +58,16 @@ public class TotalPositionProgressionService {
 
             // Get the master cuts.
             masterCuts = criteria.getMasterCuts();
-            logger.debug("The master cuts: {}.", masterCuts);
+            logger.debug("The master cuts: {}.", Arrays.toString(masterCuts));
 
             // Get the progression steps.
             progressionSteps = criteria.getProgressionSteps();
-            logger.debug("The progression steps: {}.", progressionSteps);
+            for (int step = 0; step < progressionSteps.length; step++)
+                logger.debug("The progression steps: {}.", Arrays.toString(progressionSteps[step]));
 
             // Get the progression sequence.
             progressionSequence = criteria.getProgressionSequence();
-            logger.debug("The progression sequence: {}.", progressionSequence);
+            logger.debug("The progression sequence: {}.", Arrays.toString(progressionSequence));
 
             // Get the MACS.
             macs = criteria.getMacs();
@@ -89,7 +94,7 @@ public class TotalPositionProgressionService {
             cutOrder = new int[cutCount];
             for (int cut = 0; cut < cutCount; cut++)
                 cutOrder[progressionSequence[cut] - 1] = cut;
-            logger.debug("The cut order: {}.", cutOrder);
+            logger.debug("The cut order: {}.", Arrays.toString(cutOrder));
         }
 
         // There are no criteria, so log an error
@@ -135,14 +140,90 @@ public class TotalPositionProgressionService {
      */
     private BittingGroup doProgression() {
 
-        // Instantiate the root bitting group
-        BittingGroup bittingGroup = new BittingGroup();
+//        // Instantiate the root bitting group
+//        BittingGroup bittingGroup = new BittingGroup();
+//
+//        // Progress the system recursively, filling out the root bitting group.
+//        progressBlock(0, bittingGroup);
 
-        // Progress the system recursively, filling out the root bitting group.
-        progressBlock(0, bittingGroup);
+        // TODO: Need to make progression recursive.
+
+        // TODO: Need to set the master keys into the groups.
+
+        int[] levels = new int[cutCount];
+
+        BittingGroup bittingGroup5 = new BittingGroup();
+        bittingGroup5.setMaster(masterCuts);
+        BittingNode[] bittingNodes5 = new BittingGroup[stepCount];
+        bittingGroup5.setGroups(bittingNodes5);
+
+        for (int b5 = 0; b5 < stepCount; b5++) {
+
+            levels[cutOrder[5]] = b5;
+
+            BittingGroup bittingGroup4 = new BittingGroup();
+            bittingNodes5[b5] = bittingGroup4;
+//            bittingGroup4.setMaster();
+            BittingNode[] bittingNodes4 = new BittingGroup[stepCount];
+            bittingGroup4.setGroups(bittingNodes4);
+
+            for (int b4 = 0; b4 < stepCount; b4++) {
+
+                levels[cutOrder[4]] = b4;
+
+                BittingGroup bittingGroup3 = new BittingGroup();
+                bittingNodes4[b4] = bittingGroup3;
+//                bittingGroup3.setMaster();
+                BittingNode[] bittingNodes3 = new BittingGroup[stepCount];
+                bittingGroup3.setGroups(bittingNodes3);
+
+                for (int b3 = 0; b3 < stepCount; b3++) {
+
+                    levels[cutOrder[3]] = b3;
+
+                    BittingGroup bittingGroup2 = new BittingGroup();
+                    bittingNodes3[b3] = bittingGroup2;
+//                    bittingGroup2.setMaster();
+                    BittingNode[] bittingNodes2 = new BittingGroup[stepCount];
+                    bittingGroup2.setGroups(bittingNodes2);
+
+                    for (int b2 = 0; b2 < stepCount; b2++) {
+
+                        levels[cutOrder[2]] = b2;
+
+                        BittingGroup bittingGroup1 = new BittingGroup();
+                       bittingNodes2[b2] = bittingGroup1;
+//                        bittingGroup1.setMaster();
+                        BittingNode[] bittingNodes1 = new BittingGroup[stepCount];
+                        bittingGroup1.setGroups(bittingNodes1);
+
+                        for (int b1 = 0; b1 < stepCount; b1++) {
+
+                            levels[cutOrder[1]] = b1;
+
+                            BittingGroup bittingGroup0 = new BittingGroup();
+                            bittingNodes1[b1] = bittingGroup0;
+//                            bittingGroup0.setMaster();
+                            BittingNode[] bittingNodes0 = new KeyBitting[stepCount];
+                            bittingGroup0.setGroups(bittingNodes0);
+
+
+                            for (int b0 = 0; b0 < stepCount; b0++) {
+
+                                levels[cutOrder[0]] = b0;
+
+                                KeyBitting keyBitting = generateKey(levels);
+                                bittingNodes0[b0] = keyBitting;
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         // Return the filled-out root bitting group.
-        return bittingGroup;
+//        return bittingGroup;
+        return bittingGroup5;
     }
 
     /**

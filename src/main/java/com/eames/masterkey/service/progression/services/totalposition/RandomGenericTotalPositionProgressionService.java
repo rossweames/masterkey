@@ -115,6 +115,9 @@ public class RandomGenericTotalPositionProgressionService
         // Throws: ProgressionServiceException
         BittingList bittingList = service.generateBittingList();
 
+        // Set this service name into the bitting list source.
+        bittingList.setSource(getName());
+        
         /*
          * Construct a gson instance using the gson builder.
          * Specify that int arrays should be serialized as strings.
