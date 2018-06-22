@@ -42,12 +42,12 @@ public class RandomGenericTotalPositionProgressionService
 
     // The cut count configuration
     private static final String CUT_COUNT_KEY = "cutCount";
-    private static final int CUT_COUNT_MIN = 5;
+    private static final int CUT_COUNT_MIN = 3;
     private static final int CUT_COUNT_MAX = 7;
 
     // The depth count configuration
     private static final String DEPTH_COUNT_KEY = "depthCount";
-    private static final int DEPTH_COUNT_MIN = 5;
+    private static final int DEPTH_COUNT_MIN = 3;
     private static final int DEPTH_COUNT_MAX = 10;
 
     // The starting depth configuration

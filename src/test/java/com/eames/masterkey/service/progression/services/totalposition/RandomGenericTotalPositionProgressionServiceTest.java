@@ -98,7 +98,7 @@ public class RandomGenericTotalPositionProgressionServiceTest {
     @Test
     public void testCanProcessConfigs_TooSmallCutCount() {
 
-        configs.put("cutCount", 4);
+        configs.put("cutCount", 2);
 
         ProcessingCapability capability = service.canProcessConfigs(configs.toString());
 
@@ -108,7 +108,7 @@ public class RandomGenericTotalPositionProgressionServiceTest {
     @Test
     public void testCanProcessConfigs_MinCutCount() {
 
-        configs.put("cutCount", 5);
+        configs.put("cutCount", 3);
 
         ProcessingCapability capability = service.canProcessConfigs(configs.toString());
 
@@ -156,7 +156,7 @@ public class RandomGenericTotalPositionProgressionServiceTest {
     @Test
     public void testCanProcessConfigs_TooSmallDepthCount() {
 
-        configs.put("depthCount", 4);
+        configs.put("depthCount", 2);
         ProcessingCapability capability = service.canProcessConfigs(configs.toString());
 
         assertEquals(ProcessingCapability.NO, capability);
@@ -165,7 +165,7 @@ public class RandomGenericTotalPositionProgressionServiceTest {
     @Test
     public void testCanProcessConfigs_MinDepthCount() {
 
-        configs.put("depthCount", 5);
+        configs.put("depthCount", 3);
         ProcessingCapability capability = service.canProcessConfigs(configs.toString());
 
         assertEquals(ProcessingCapability.YES, capability);
