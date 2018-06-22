@@ -8,7 +8,6 @@ import com.eames.masterkey.service.progression.ProgressionServiceException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.security.Key;
 import java.util.Arrays;
 
 /**
@@ -25,9 +24,6 @@ public class TotalPositionProgressionService {
 
     // The progression steps come from the criteria passed to the constructor.
     private int[][] progressionSteps;
-
-    // The progression sequence comes from the criteria passed to the constructor.
-    private int[] progressionSequence;
 
     // The MACS comes from the criteria passed to the constructor.
     private int macs;
@@ -62,11 +58,11 @@ public class TotalPositionProgressionService {
 
             // Get the progression steps.
             progressionSteps = criteria.getProgressionSteps();
-            for (int step = 0; step < progressionSteps.length; step++)
-                logger.debug("The progression steps: {}.", Arrays.toString(progressionSteps[step]));
+            for (int[] progressionStepRow : progressionSteps)
+                logger.debug("The progression steps: {}.", Arrays.toString(progressionStepRow));
 
             // Get the progression sequence.
-            progressionSequence = criteria.getProgressionSequence();
+            int[] progressionSequence = criteria.getProgressionSequence();
             logger.debug("The progression sequence: {}.", Arrays.toString(progressionSequence));
 
             // Get the MACS.
@@ -81,7 +77,7 @@ public class TotalPositionProgressionService {
             cutCount = progressionSequence.length;
             logger.debug("The cut count: {}.", cutCount);
 
-            /**
+            /*
              * Generate the cut order array from the progression sequence.
              * The cut order array determines the order in which the progression steps are applied during the progression
              * process.
@@ -104,8 +100,6 @@ public class TotalPositionProgressionService {
 
     /**
      * Generates a bitting list using the Total Position Progression technique.
-     *
-     * TODO: Need .generateBittingList() tests.
      *
      * @return the newly generated {@link BittingList}
      * @throws ProgressionServiceException if any error occurs
@@ -140,126 +134,111 @@ public class TotalPositionProgressionService {
      */
     private BittingGroup doProgression() {
 
-//        // Instantiate the root bitting group
-//        BittingGroup bittingGroup = new BittingGroup();
-//
-//        // Progress the system recursively, filling out the root bitting group.
-//        progressBlock(0, bittingGroup);
+        // Instantiate the root bitting group
+        BittingGroup rootBittingGroup = new BittingGroup();
 
-        // TODO: Need to make progression recursive.
-
-        // TODO: Need to set the master keys into the groups.
-
+        // Holds the current step level for each cut (initializes each to 0).
         int[] levels = new int[cutCount];
-        int[] cuts = new int[cutCount];
 
-        BittingGroup bittingGroup5 = new BittingGroup();
-        bittingGroup5.setMaster(masterCuts);
-        BittingNode[] bittingNodes5 = new BittingGroup[stepCount];
-        bittingGroup5.setGroups(bittingNodes5);
+        // Start progressing at the top-level block.
+        progressBlock(cutCount, levels, rootBittingGroup);
 
-        for (cuts[5] = 0; cuts[5] < stepCount; cuts[5]++) {
+        // Return the filled-out root bitting group.
+        return rootBittingGroup;
+    }
 
-            levels[cutOrder[5]] = cuts[5];
+    /**
+     * Progresses the block with the given block level.
+     *
+     * @param blockLevel the block level to progress [1, cutCount])
+     * @param levels the set of block current levels
+     * @param parentBittingGroup the parent {@link BittingGroup} to fill out
+     */
+    private void progressBlock(int blockLevel, int[] levels, BittingGroup parentBittingGroup) {
 
-            BittingGroup bittingGroup4 = new BittingGroup();
-            bittingNodes5[cuts[5]] = bittingGroup4;
-//            bittingGroup4.setMaster();
-            BittingNode[] bittingNodes4 = new BittingGroup[stepCount];
-            bittingGroup4.setGroups(bittingNodes4);
+        // Decrement the block level.
+        blockLevel--;
 
-            for (cuts[4] = 0; cuts[4] < stepCount; cuts[4]++) {
+        // Set the parent bitting group's master.
+        parentBittingGroup.setMaster(generateMasterKey(blockLevel, levels));
 
-                levels[cutOrder[4]] = cuts[4];
+        // We're still processing groups.
+        if (blockLevel > 0) {
 
-                BittingGroup bittingGroup3 = new BittingGroup();
-                bittingNodes4[cuts[4]] = bittingGroup3;
-//                bittingGroup3.setMaster();
-                BittingNode[] bittingNodes3 = new BittingGroup[stepCount];
-                bittingGroup3.setGroups(bittingNodes3);
+            // Create the next level bitting group's nodes.
+            BittingNode[] bittingNodes = new BittingGroup[stepCount];
+            parentBittingGroup.setGroups(bittingNodes);
 
-                for (cuts[3] = 0; cuts[3] < stepCount; cuts[3]++) {
+            // Loop through the steps.
+            for (int step = 0; step < stepCount; step++) {
 
-                    levels[cutOrder[3]] = cuts[3];
+                // Set the level.
+                levels[cutOrder[blockLevel]] = step;
 
-                    BittingGroup bittingGroup2 = new BittingGroup();
-                    bittingNodes3[cuts[3]] = bittingGroup2;
-//                    bittingGroup2.setMaster();
-                    BittingNode[] bittingNodes2 = new BittingGroup[stepCount];
-                    bittingGroup2.setGroups(bittingNodes2);
+                // Create the next level bitting group and set it into the bitting node array.
+                BittingGroup bittingGroup = new BittingGroup();
+                bittingNodes[step] = bittingGroup;
 
-                    for (cuts[2] = 0; cuts[2] < stepCount; cuts[2]++) {
-
-                        levels[cutOrder[2]] = cuts[2];
-
-                        BittingGroup bittingGroup1 = new BittingGroup();
-                       bittingNodes2[cuts[2]] = bittingGroup1;
-//                        bittingGroup1.setMaster();
-                        BittingNode[] bittingNodes1 = new BittingGroup[stepCount];
-                        bittingGroup1.setGroups(bittingNodes1);
-
-                        for (cuts[1] = 0; cuts[1] < stepCount; cuts[1]++) {
-
-                            levels[cutOrder[1]] = cuts[1];
-
-                            BittingGroup bittingGroup0 = new BittingGroup();
-                            bittingNodes1[cuts[1]] = bittingGroup0;
-//                            bittingGroup0.setMaster();
-                            BittingNode[] bittingNodes0 = new KeyBitting[stepCount];
-                            bittingGroup0.setGroups(bittingNodes0);
-
-                            for (cuts[0] = 0; cuts[0] < stepCount; cuts[0]++) {
-
-                                levels[cutOrder[0]] = cuts[0];
-
-                                KeyBitting keyBitting = generateKey(levels);
-                                bittingNodes0[cuts[0]] = keyBitting;
-                            }
-                        }
-                    }
-                }
+                // Process the next level down.
+                progressBlock(blockLevel, levels, bittingGroup);
             }
         }
 
-        // Return the filled-out root bitting group.
-//        return bittingGroup;
-        return bittingGroup5;
+        // We're processing the key group.
+        else {
+
+            // Create the key group's nodes.
+            BittingNode[] bittingNodes = new KeyBitting[stepCount];
+            parentBittingGroup.setGroups(bittingNodes);
+
+            // Loop through the steps.
+            for (int step = 0; step < stepCount; step++) {
+
+                // Set the level.
+                levels[cutOrder[blockLevel]] = step;
+
+                KeyBitting keyBitting = generateChangeKey(levels);
+                bittingNodes[step] = keyBitting;
+            }
+        }
     }
 
     /**
-     * Progresses the block with the given level.
+     * Generates a master key {@link KeyBitting} for the given level.
      *
-     * @param blockLevel the block level to progress
-     * @param bittingGroup the {@link BittingGroup} to fill out
+     * @param blockLevel the level for which to generate the master key
+     * @param levels the levels to use
+     * @return the newly generated key
      */
-    private void progressBlock(int blockLevel, BittingGroup bittingGroup) {
+    private KeyBitting generateMasterKey(int blockLevel, int[] levels) {
 
-        // TODO: Need to progress the block.
+        // Generate the key depths for those cuts that come from the progression steps.
+        int[] depths = new int[cutCount];
+        for (int seq = 0; seq <= blockLevel; seq++)
+            depths[cutOrder[seq]] = masterCuts[cutOrder[seq]];
 
-        if (blockLevel < cutCount)
-            progressBlock(blockLevel + 1, bittingGroup);
-        else
-            return;
+        // Generate the key depths for those cuts that come from the master.
+        for (int seq = blockLevel + 1; seq < cutCount; seq++)
+            depths[cutOrder[seq]] = progressionSteps[levels[cutOrder[seq]]][cutOrder[seq]];
+
+        // Instantiate the key, test it for a MACS violation, and return it.
+        return new KeyBitting(depths, macs);
     }
 
     /**
-     * Generates a {@link KeyBitting} for the given set of levels.
+     * Generates a change key {@link KeyBitting} for the given set of levels.
      *
      * @param levels the levels to use
-     * @return the newly generated key \
+     * @return the newly generated change key
      */
-    private KeyBitting generateKey(int[] levels) {
+    private KeyBitting generateChangeKey(int[] levels) {
 
         // Generate the key depths.
         int[] depths = new int[cutCount];
         for (int cut = 0; cut < cutCount; cut++)
             depths[cut] = progressionSteps[levels[cut]][cut];
 
-        // Instantiate the key and test for a MACS violation.
-        KeyBitting keyBitting = new KeyBitting(depths);
-        keyBitting.testForMACSViolation(macs);
-
-        // Return the key.
-        return keyBitting;
+        // Instantiate the key, test it for a MACS violation, and return it.
+        return new KeyBitting(depths, macs);
     }
 }

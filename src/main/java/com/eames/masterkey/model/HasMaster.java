@@ -6,16 +6,16 @@ package com.eames.masterkey.model;
 public interface HasMaster {
 
     /**
-     * Gets the master key cuts.
+     * Gets the master {@link KeyBitting}.
      *
-     * @return the master key cuts
+     * @return the master key bitting
      */
-    int[] getMaster();
+    KeyBitting getMaster();
 
     /**
-     * Sets the masterkey cuts.
+     * Sets the master {@link KeyBitting}.
      *
      * @param master the new master key cuts
      */
-    void setMaster(int[] master);
+    void setMaster(KeyBitting master);
 }

@@ -9,7 +9,7 @@ public class BittingGroup
         implements BittingNode, HasMaster, HasGroups {
 
     // The group's master key.
-    private int[] master;
+    private KeyBitting master;
 
     // The child bitting groups
     private BittingNode[] groups;
@@ -30,12 +30,12 @@ public class BittingGroup
      */
 
     @Override
-    public int[] getMaster() {
+    public KeyBitting getMaster() {
         return master;
     }
 
     @Override
-    public void setMaster(int[] master) {
+    public void setMaster(KeyBitting master) {
         this.master = master;
     }
 

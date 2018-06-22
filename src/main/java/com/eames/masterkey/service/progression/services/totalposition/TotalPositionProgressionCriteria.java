@@ -258,6 +258,8 @@ public class TotalPositionProgressionCriteria {
                 }
             }
 
+            // TODO: Need to validate that there are no duplicates in a chamber for the progression steps.
+
             /*
              * Make sure that the progression steps do not contain any of the master key depths in the same column.
              */

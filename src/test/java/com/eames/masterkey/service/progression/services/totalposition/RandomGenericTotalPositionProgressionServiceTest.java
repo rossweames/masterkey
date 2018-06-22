@@ -1,9 +1,7 @@
-package com.eames.masterkey.service.progression.services;
+package com.eames.masterkey.service.progression.services.totalposition;
 
-import com.eames.masterkey.model.BittingList;
 import com.eames.masterkey.service.ProcessingCapability;
 import com.eames.masterkey.service.progression.ProgressionServiceException;
-import com.eames.masterkey.service.progression.services.totalposition.RandomGenericTotalPositionProgressionService;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;

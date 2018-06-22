@@ -1,7 +1,6 @@
-package com.eames.masterkey.service.progression;
+package com.eames.masterkey.service.progression.services.totalposition;
 
 import com.eames.masterkey.service.ValidationException;
-import com.eames.masterkey.service.progression.services.totalposition.TotalPositionProgressionCriteria;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
