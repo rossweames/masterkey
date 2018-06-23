@@ -115,9 +115,9 @@ public class RandomGenericTotalPositionProgressionService
         // Throws: ProgressionServiceException
         BittingList bittingList = service.generateBittingList();
 
-        // Set this service name into the bitting list source.
-        bittingList.setSource(getName());
-        
+        // Construct the results to be returned.
+        TotalPositionServiceResults results = new TotalPositionServiceResults(getName(), criteria, bittingList);
+
         /*
          * Construct a gson instance using the gson builder.
          * Specify that int arrays should be serialized as strings.
@@ -131,11 +131,8 @@ public class RandomGenericTotalPositionProgressionService
                 })
                 .create();
 
-        // Serialize the bitting list to JSON.
-        String jsonBittingListStr = gson.toJson(bittingList);
-
-        // Return the JSON bitting list.
-        return jsonBittingListStr;
+        // Serialize the results to JSON and return them.
+        return gson.toJson(results);
     }
 
     @Override
@@ -587,7 +584,6 @@ public class RandomGenericTotalPositionProgressionService
             // Build the progression criteria object from the randomly generated criteria.
             // Throws: ValidationException
             TotalPositionProgressionCriteria criteria = new TotalPositionProgressionCriteria.Builder()
-                    .setSource(getName())
                     .setMACS(macs)
                     .setMasterCuts(masterCuts)
                     .setProgressionSteps(progressionSteps)

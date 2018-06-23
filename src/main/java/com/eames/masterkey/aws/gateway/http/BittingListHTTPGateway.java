@@ -61,8 +61,6 @@ public class BittingListHTTPGateway
 
         logger.info("BittingListHTTPGateway got a request.");
 
-        // The response JSON object
-        JSONObject responseJson = new JSONObject();
         try {
 
             // Construct a reader for the input stream.
@@ -79,37 +77,35 @@ public class BittingListHTTPGateway
 
             // Generate the bitting list.
             // Throws: ProgressionServiceException
-            String jsonBittingListStr = service.generateBittingList(jsonRequestStr);
-            logger.debug("Bitting List: {}", jsonBittingListStr);
+            String responseStr = service.generateBittingList(jsonRequestStr);
+            logger.debug("Bitting List: {}", responseStr);
 
-            // Insert the bitting list into the response.
-            responseJson.put("body", jsonBittingListStr);
-            responseJson.put("statusCode", "200");
+            // Write the response to the output stream.
+            OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
+            writer.write(responseStr);
+            writer.close();
 
         } catch (ProgressionServiceProviderException ex) {
 
             String errorMessage = "The ProgressionServiceProvider failed to find a service to process the request.";
             logger.error("{} Cause: {}", errorMessage, ex.getMessage());
 
-            responseJson.put("statusCode", "400");
-            responseJson.put("errorMessage", errorMessage);
-            responseJson.put("exception", ex.getMessage());
+            StringBuilder sb = new StringBuilder();
+            sb.append(errorMessage);
+            sb.append(" ");
+            sb.append(ex.getMessage());
+            throw new IOException(sb.toString());
 
         } catch (ProgressionServiceException ex) {
 
             String errorMessage = "The ProgressionService failed to generate a bitting list.";
             logger.error("{} Cause: {}", errorMessage, ex.getMessage());
 
-            responseJson.put("statusCode", "500");
-            responseJson.put("errorMessage", errorMessage);
-            responseJson.put("exception", ex.getMessage());
+            StringBuilder sb = new StringBuilder();
+            sb.append(errorMessage);
+            sb.append(" ");
+            sb.append(ex.getMessage());
+            throw new IOException(sb.toString());
         }
-
-        logger.debug("Response: {}", responseJson.toString());
-
-        // Write the response to rhe output stream.
-        OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
-        writer.write(responseJson.toString());
-        writer.close();
     }
 }

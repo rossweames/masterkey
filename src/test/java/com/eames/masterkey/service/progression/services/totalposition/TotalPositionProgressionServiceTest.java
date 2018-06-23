@@ -76,7 +76,6 @@ public class TotalPositionProgressionServiceTest {
             assertNotNull(bittingList);
 
             // Test the root bitting group.
-            assertNull(bittingList.getSource());
             BittingGroup rootBittingGroup = bittingList.getRootBittingGroup();
             assertNotNull(rootBittingGroup);
             KeyBitting master = rootBittingGroup.getMaster();
@@ -243,7 +242,6 @@ public class TotalPositionProgressionServiceTest {
             assertNotNull(bittingList);
 
             // Test the root bitting group.
-            assertNull(bittingList.getSource());
             BittingGroup rootBittingGroup = bittingList.getRootBittingGroup();
             assertNotNull(rootBittingGroup);
             KeyBitting master = rootBittingGroup.getMaster();
