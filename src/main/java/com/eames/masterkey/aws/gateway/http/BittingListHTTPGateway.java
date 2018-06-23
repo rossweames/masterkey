@@ -106,6 +106,17 @@ public class BittingListHTTPGateway
             sb.append(" ");
             sb.append(ex.getMessage());
             throw new IOException(sb.toString());
+
+        } catch (Exception ex) {
+
+            String errorMessage = "An unexpected exception occurred.";
+            logger.error("{} Cause: {}", errorMessage, ex.getMessage());
+
+            StringBuilder sb = new StringBuilder();
+            sb.append(errorMessage);
+            sb.append(" ");
+            sb.append(ex.getMessage());
+            throw new IOException(sb.toString());
         }
     }
 }

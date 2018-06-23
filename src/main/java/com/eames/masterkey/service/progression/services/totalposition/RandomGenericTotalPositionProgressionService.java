@@ -118,6 +118,9 @@ public class RandomGenericTotalPositionProgressionService
         // Construct the results to be returned.
         TotalPositionServiceResults results = new TotalPositionServiceResults(getName(), criteria, bittingList);
 
+        // TODO: Should this translation to JSON be moved to the HttpGateway class?
+        // TODO: Create a base class for the return results.
+
         /*
          * Construct a gson instance using the gson builder.
          * Specify that int arrays should be serialized as strings.

@@ -344,6 +344,7 @@ public class RandomGenericTotalPositionProgressionServiceTest {
     }
 
     // TODO: Need more .generateBittingList() tests.
+    // TODO: exceptions, json parser testing results for source, criteria, bitting list.
 
     @Test
     public void testGenerateBittingList_() {
