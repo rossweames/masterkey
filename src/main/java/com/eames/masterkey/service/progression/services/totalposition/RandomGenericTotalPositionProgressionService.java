@@ -23,11 +23,11 @@ import java.util.Random;
  *
  * It expects the configurations to have the following format:
  * {
- *     cutCount : [5-7] // The number of cuts in the key
- *     depthCount : [5-10] // The number of cut depths
+ *     cutCount : [3-7] // The number of cuts in the key
+ *     depthCount : [3-10] // The number of cut depths
  *     startingDepth : [0, 1] // The value of the shallowest depth
  *     doubleStepProgression : [false, true] // Single or double step depth progression
- *     macs : [4-9] // The Maximum Adjacent Cut Specification
+ *     macs : [1-10] // The Maximum Adjacent Cut Specification
  * }
  */
 public class RandomGenericTotalPositionProgressionService
