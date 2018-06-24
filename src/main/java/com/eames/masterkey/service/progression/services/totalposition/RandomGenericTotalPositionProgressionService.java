@@ -3,8 +3,10 @@ package com.eames.masterkey.service.progression.services.totalposition;
 import com.eames.masterkey.model.BittingList;
 import com.eames.masterkey.service.ProcessingCapability;
 import com.eames.masterkey.service.ValidationException;
+import com.eames.masterkey.service.progression.ProgressionCriteria;
 import com.eames.masterkey.service.progression.ProgressionService;
 import com.eames.masterkey.service.progression.ProgressionServiceException;
+import com.eames.masterkey.service.progression.ProgressionServiceResults;
 import com.google.gson.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -75,6 +77,8 @@ public class RandomGenericTotalPositionProgressionService
 
         logger.info("Verifying that this service can process the configurations.");
 
+        // TODO: Need to NOT validate values, only structure.
+
         // Convert the JSON string in to a JSONObject and validate.
         // Pass a 'true' to indicate that we're in the 'check' phase.
         JSONObject jsonConfigs = getJSONConfigs(configs, true);
@@ -85,7 +89,7 @@ public class RandomGenericTotalPositionProgressionService
     }
 
     @Override
-    public String generateBittingList(String configs)
+    public ProgressionServiceResults generateBittingList(String configs)
             throws ProgressionServiceException {
 
         logger.info("Generating a bitting list using the {} service.", getName());
@@ -119,27 +123,8 @@ public class RandomGenericTotalPositionProgressionService
         // Throws: ProgressionServiceException
         BittingList bittingList = service.generateBittingList();
 
-        // Construct the results to be returned.
-        TotalPositionServiceResults results = new TotalPositionServiceResults(getName(), criteria, bittingList);
-
-        // TODO: Should this translation to JSON be moved to the HttpGateway class?
-        // TODO: Create a base class for the return results.
-
-        /*
-         * Construct a gson instance using the gson builder.
-         * Specify that int arrays should be serialized as strings.
-         */
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(int[].class, (JsonSerializer<int[]>) (src, type, jsonSerializationContext) -> {
-                    StringBuilder sb = new StringBuilder();
-                    for (int v : src)
-                        sb.append(v);
-                    return new JsonPrimitive(sb.toString());
-                })
-                .create();
-
-        // Serialize the results to JSON and return them.
-        return gson.toJson(results);
+        // Construct and return the results.
+        return new ProgressionServiceResults(getName(), criteria, bittingList);
     }
 
     @Override

@@ -1,17 +1,17 @@
-package com.eames.masterkey.service.progression.services.totalposition;
+package com.eames.masterkey.service.progression;
 
 import com.eames.masterkey.model.BittingList;
 
 /**
- * This class holds the results of the Total Progression Services' bitting list generations.
+ * This class holds the results of Progression Services' bitting list generations.
  */
-public class TotalPositionServiceResults {
+public class ProgressionServiceResults {
 
     // The name of the service that generated this bitting list.
     private String source;
 
     // The criteria that were used to generate tge bitting group.
-    private TotalPositionProgressionCriteria criteria;
+    private ProgressionCriteria criteria;
 
     // The generated bitting list.
     private BittingList bittingList;
@@ -20,10 +20,10 @@ public class TotalPositionServiceResults {
      * Constructor
      *
      * @param source the source progression service
-     * @param criteria the criteria used to generate tge bitting list
+     * @param criteria the criteria used to generate the bitting list
      * @param bittingList the generated bitting list
      */
-    public TotalPositionServiceResults(String source, TotalPositionProgressionCriteria criteria, BittingList bittingList) {
+    public ProgressionServiceResults(String source, ProgressionCriteria criteria, BittingList bittingList) {
 
         this.source = source;
         this.criteria = criteria;
@@ -40,11 +40,11 @@ public class TotalPositionServiceResults {
     }
 
     /**
-     * Gets the {@link TotalPositionProgressionCriteria} used to generate the bitting list.
+     * Gets the {@link ProgressionCriteria} used to generate the bitting list.
      *
      * @return the criteria
      */
-    public TotalPositionProgressionCriteria getCriteria() {
+    public ProgressionCriteria getCriteria() {
         return criteria;
     }
 

@@ -22,9 +22,9 @@ public interface ProgressionService
      * Generates a JSON bitting list using the given configurations.
      *
      * @param configs the JSON configurations to use
-     * @return the generated JSON bitting list
+     * @return a {@link ProgressionServiceResults} that contains the generated JSON bitting list
      * @throws ProgressionServiceException if any error occurs
      */
-    String generateBittingList(String configs)
+    ProgressionServiceResults generateBittingList(String configs)
             throws ProgressionServiceException;
 }
