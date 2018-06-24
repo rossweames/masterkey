@@ -1,6 +1,7 @@
 package com.eames.masterkey.service.progression.services.totalposition;
 
 import com.eames.masterkey.service.ValidationException;
+import com.eames.masterkey.service.progression.ProgressionCriteria;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -8,7 +9,7 @@ import org.apache.logging.log4j.Logger;
  * This class represents the set of criteria required to generate a
  * master key bitting list using a Total Position Progression technique.
  */
-public class TotalPositionProgressionCriteria {
+public class TotalPositionProgressionCriteria implements ProgressionCriteria {
 
     // Initialize the Log4j logger.
     private static final Logger logger = LogManager.getLogger(TotalPositionProgressionCriteria.class);
