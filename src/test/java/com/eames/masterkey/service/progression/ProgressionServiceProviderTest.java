@@ -32,7 +32,7 @@ public class ProgressionServiceProviderTest {
     private abstract class TestBittingListService implements ProgressionService {
 
         @Override
-        public String generateBittingList(String configs) {
+        public ProgressionServiceResults generateBittingList(String configs) {
             return null;
         }
 
