@@ -1,6 +1,7 @@
 package com.eames.masterkey.service.progression.services.totalposition;
 
 import com.eames.masterkey.service.ValidationException;
+import com.eames.masterkey.service.progression.ProgressionCriteria;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -8,13 +9,10 @@ import org.apache.logging.log4j.Logger;
  * This class represents the set of criteria required to generate a
  * master key bitting list using a Total Position Progression technique.
  */
-public class TotalPositionProgressionCriteria {
+public class TotalPositionProgressionCriteria implements ProgressionCriteria {
 
     // Initialize the Log4j logger.
     private static final Logger logger = LogManager.getLogger(TotalPositionProgressionCriteria.class);
-
-    // The service that generated the bitting list.
-    private final String source;
 
     // The Maximum Adjacent Cut Specification (MACS)
     private final int macs;
@@ -33,28 +31,17 @@ public class TotalPositionProgressionCriteria {
      * This constructor has been declared private so that it can only
      * be called from within the builder.
      *
-     * @param source the service that generated the bitting list
      * @param macs the MACS value to set
      * @param masterCuts the master cuts to set
      * @param progressionSteps the progression steps to set
      * @param progressionSequence the progression sequence to set
      */
-    private TotalPositionProgressionCriteria(String source, int macs, int[] masterCuts, int[][] progressionSteps, int[] progressionSequence) {
+    private TotalPositionProgressionCriteria(int macs, int[] masterCuts, int[][] progressionSteps, int[] progressionSequence) {
 
-        this.source = source;
         this.macs = macs;
         this.masterCuts = masterCuts;
         this.progressionSteps = progressionSteps;
         this.progressionSequence = progressionSequence;
-    }
-
-    /**
-     * Gets the source.
-     *
-     * @return the source (can be null)
-     */
-    public String getSource() {
-        return source;
     }
 
     /**
@@ -102,24 +89,10 @@ public class TotalPositionProgressionCriteria {
         /**
          * The attributes to be used to build the configs
          */
-        private String source;
         private int macs;
         private int[] masterCuts;
         private int[][] progressionSteps;
         private int[] progressionSequence;
-
-        /**
-         * Sets the source.
-         * Returns the {@link Builder} so these operations can be chained.
-         *
-         * @param source the new source
-         * @return this builder
-         */
-        public Builder setSource(String source) {
-
-            this.source = source;
-            return this;
-        }
 
         /**
          * Sets the MACS.
@@ -258,6 +231,8 @@ public class TotalPositionProgressionCriteria {
                 }
             }
 
+            // TODO: Need to validate that there are no duplicates in a chamber for the progression steps.
+
             /*
              * Make sure that the progression steps do not contain any of the master key depths in the same column.
              */
@@ -350,7 +325,7 @@ public class TotalPositionProgressionCriteria {
             validate();
 
             // Construct and return the configs.
-            return new TotalPositionProgressionCriteria(source, macs, masterCuts, progressionSteps, progressionSequence);
+            return new TotalPositionProgressionCriteria(macs, masterCuts, progressionSteps, progressionSequence);
         }
     }
 }

@@ -1,8 +1,8 @@
-package com.eames.masterkey.service.progression.services;
+package com.eames.masterkey.service.progression.services.totalposition;
 
 import com.eames.masterkey.service.ProcessingCapability;
 import com.eames.masterkey.service.progression.ProgressionServiceException;
-import com.eames.masterkey.service.progression.services.totalposition.RandomGenericTotalPositionProgressionService;
+import com.eames.masterkey.service.progression.ProgressionServiceResults;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
@@ -35,7 +35,7 @@ public class RandomGenericTotalPositionProgressionServiceTest {
         configs.put("cutCount", 6);
         configs.put("depthCount", 10);
         configs.put("startingDepth", 0);
-        configs.put("progressionStep", 2);
+        configs.put("doubleStepProgression", true);
         configs.put("macs", 4);
    }
 
@@ -99,7 +99,7 @@ public class RandomGenericTotalPositionProgressionServiceTest {
     @Test
     public void testCanProcessConfigs_TooSmallCutCount() {
 
-        configs.put("cutCount", 4);
+        configs.put("cutCount", 2);
 
         ProcessingCapability capability = service.canProcessConfigs(configs.toString());
 
@@ -109,7 +109,7 @@ public class RandomGenericTotalPositionProgressionServiceTest {
     @Test
     public void testCanProcessConfigs_MinCutCount() {
 
-        configs.put("cutCount", 5);
+        configs.put("cutCount", 3);
 
         ProcessingCapability capability = service.canProcessConfigs(configs.toString());
 
@@ -157,7 +157,7 @@ public class RandomGenericTotalPositionProgressionServiceTest {
     @Test
     public void testCanProcessConfigs_TooSmallDepthCount() {
 
-        configs.put("depthCount", 4);
+        configs.put("depthCount", 2);
         ProcessingCapability capability = service.canProcessConfigs(configs.toString());
 
         assertEquals(ProcessingCapability.NO, capability);
@@ -166,7 +166,7 @@ public class RandomGenericTotalPositionProgressionServiceTest {
     @Test
     public void testCanProcessConfigs_MinDepthCount() {
 
-        configs.put("depthCount", 5);
+        configs.put("depthCount", 3);
         ProcessingCapability capability = service.canProcessConfigs(configs.toString());
 
         assertEquals(ProcessingCapability.YES, capability);
@@ -247,7 +247,7 @@ public class RandomGenericTotalPositionProgressionServiceTest {
     @Test
     public void testCanProcessConfigs_MissingProgressionStep() {
 
-        configs.remove("progressionStep");
+        configs.remove("doubleStepProgression");
         ProcessingCapability capability = service.canProcessConfigs(configs.toString());
 
         assertEquals(ProcessingCapability.NO, capability);
@@ -256,43 +256,7 @@ public class RandomGenericTotalPositionProgressionServiceTest {
     @Test
     public void testCanProcessConfigs_WrongTypeProgressionStep() {
 
-        configs.put("progressionStep", "2");
-        ProcessingCapability capability = service.canProcessConfigs(configs.toString());
-
-        assertEquals(ProcessingCapability.NO, capability);
-    }
-
-    @Test
-    public void testCanProcessConfigs_TooSmallProgressionStep() {
-
-        configs.put("progressionStep", 0);
-        ProcessingCapability capability = service.canProcessConfigs(configs.toString());
-
-        assertEquals(ProcessingCapability.NO, capability);
-    }
-
-    @Test
-    public void testCanProcessConfigs_MinProgressionStep() {
-
-        configs.put("progressionStep", 1);
-        ProcessingCapability capability = service.canProcessConfigs(configs.toString());
-
-        assertEquals(ProcessingCapability.YES, capability);
-    }
-
-    @Test
-    public void testCanProcessConfigs_MaxProgressionStep() {
-
-        configs.put("progressionStep", 2);
-        ProcessingCapability capability = service.canProcessConfigs(configs.toString());
-
-        assertEquals(ProcessingCapability.YES, capability);
-    }
-
-    @Test
-    public void testCanProcessConfigs_TooLargeProgressionStep() {
-
-        configs.put("progressionStep", 3);
+        configs.put("doubleStepProgression", "2");
         ProcessingCapability capability = service.canProcessConfigs(configs.toString());
 
         assertEquals(ProcessingCapability.NO, capability);
@@ -381,17 +345,19 @@ public class RandomGenericTotalPositionProgressionServiceTest {
     }
 
     // TODO: Need more .generateBittingList() tests.
+    // TODO: exceptions, json parser testing results for source, criteria, bitting list.
 
-//    @Test
-//    public void testGenerateBittingList_Logged() {
-//
-//        try {
-//
-//            assertNull(service.generateBittingList(configs.toString()));
-//
-//        } catch (ProgressionServiceException ex) {
-//
-//            fail(ex.getMessage());
-//        }
-//    }
+    @Test
+    public void testGenerateBittingList_() {
+
+        try {
+
+            ProgressionServiceResults results = service.generateBittingList(configs.toString());
+            assertNotNull(results);
+
+        } catch (ProgressionServiceException ex) {
+
+            fail(ex.getMessage());
+        }
+    }
 }

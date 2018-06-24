@@ -3,29 +3,28 @@ package com.eames.masterkey.model;
 /**
  * This class represents a master key system bitting list.
  *
- * It consists of a source service and a {@link BittingGroup}.
+ * It contains the root {@link BittingGroup}.
  */
-public class BittingList
-        extends BittingGroup {
+public class BittingList {
 
-    // The name of the service that generated this bitting list.
-    private String source;
+    // The bitting group.
+    private BittingGroup rootBittingGroup;
 
     /**
-     * Gets the name of the service that generated this bitting list.
+     * Gets the root {@link BittingGroup}.
      *
-     * @return the name of the service
+     * @return the root bitting group
      */
-    public String getSource() {
-        return source;
+    public BittingGroup getRootBittingGroup() {
+        return rootBittingGroup;
     }
 
     /**
-     * Sets the name of the service that generated this bitting list.
+     * Sets the root {@link BittingGroup}.
      *
-     * @param source the new name of the service
+     * @param rootBittingGroup the new roo bitting group
      */
-    public void setSource(String source) {
-        this.source = source;
+    public void setRootBittingGroup(BittingGroup rootBittingGroup) {
+        this.rootBittingGroup = rootBittingGroup;
     }
 }

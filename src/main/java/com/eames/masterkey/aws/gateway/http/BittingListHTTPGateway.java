@@ -2,11 +2,12 @@ package com.eames.masterkey.aws.gateway.http;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
-import com.eames.masterkey.service.progression.ProgressionServiceException;
-import com.eames.masterkey.service.progression.ProgressionServiceProviderException;
-import com.eames.masterkey.service.progression.ProgressionService;
-import com.eames.masterkey.service.progression.ProgressionServiceProvider;
+import com.eames.masterkey.service.progression.*;
 import com.eames.masterkey.service.progression.services.totalposition.RandomGenericTotalPositionProgressionService;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializer;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -61,8 +62,6 @@ public class BittingListHTTPGateway
 
         logger.info("BittingListHTTPGateway got a request.");
 
-        // The response JSON object
-        JSONObject responseJson = new JSONObject();
         try {
 
             // Construct a reader for the input stream.
@@ -79,37 +78,62 @@ public class BittingListHTTPGateway
 
             // Generate the bitting list.
             // Throws: ProgressionServiceException
-            String jsonBittingListStr = service.generateBittingList(jsonRequestStr);
-            logger.debug("Bitting List: {}", jsonBittingListStr);
+            ProgressionServiceResults results = service.generateBittingList(jsonRequestStr);
 
-            // Insert the bitting list into the response.
-            responseJson.put("body", jsonBittingListStr);
-            responseJson.put("statusCode", "200");
+            /*
+             * Construct a gson instance using the gson builder.
+             * Specify that int arrays should be serialized as strings.
+             */
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(int[].class, (JsonSerializer<int[]>) (src, type, jsonSerializationContext) -> {
+                        StringBuilder sb = new StringBuilder();
+                        for (int v : src)
+                            sb.append(v);
+                        return new JsonPrimitive(sb.toString());
+                    })
+                    .create();
+
+            // Serialize the results to JSON.
+            String resultsStr = gson.toJson(results);
+            logger.debug("Results: {}", resultsStr);
+
+            // Write the response to the output stream.
+            OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
+            writer.write(resultsStr);
+            writer.close();
 
         } catch (ProgressionServiceProviderException ex) {
 
             String errorMessage = "The ProgressionServiceProvider failed to find a service to process the request.";
             logger.error("{} Cause: {}", errorMessage, ex.getMessage());
 
-            responseJson.put("statusCode", "400");
-            responseJson.put("errorMessage", errorMessage);
-            responseJson.put("exception", ex.getMessage());
+            StringBuilder sb = new StringBuilder();
+            sb.append(errorMessage);
+            sb.append(" ");
+            sb.append(ex.getMessage());
+            throw new IOException(sb.toString());
 
         } catch (ProgressionServiceException ex) {
 
             String errorMessage = "The ProgressionService failed to generate a bitting list.";
             logger.error("{} Cause: {}", errorMessage, ex.getMessage());
 
-            responseJson.put("statusCode", "500");
-            responseJson.put("errorMessage", errorMessage);
-            responseJson.put("exception", ex.getMessage());
+            StringBuilder sb = new StringBuilder();
+            sb.append(errorMessage);
+            sb.append(" ");
+            sb.append(ex.getMessage());
+            throw new IOException(sb.toString());
+
+        } catch (Exception ex) {
+
+            String errorMessage = "An unexpected exception occurred.";
+            logger.error("{} Cause: {}", errorMessage, ex.getMessage());
+
+            StringBuilder sb = new StringBuilder();
+            sb.append(errorMessage);
+            sb.append(" ");
+            sb.append(ex.getMessage());
+            throw new IOException(sb.toString());
         }
-
-        logger.debug("Response: {}", responseJson.toString());
-
-        // Write the response to rhe output stream.
-        OutputStreamWriter writer = new OutputStreamWriter(outputStream, "UTF-8");
-        writer.write(responseJson.toString());
-        writer.close();
     }
 }
