@@ -104,6 +104,10 @@ public class RandomGenericTotalPositionProgressionService
             throw new ProgressionServiceException(errorMessage);
         }
 
+        // Validate the JSON configs object .
+        // Throws ProgressionServiceException
+        valiateJSONConfigs(jsonConfigs);
+
         // Generate the progression criteria from the configs.
         // Throws: ProgressionServiceException
         TotalPositionProgressionCriteria criteria = generateProgressionCriteria(jsonConfigs);
@@ -149,10 +153,10 @@ public class RandomGenericTotalPositionProgressionService
      */
 
     /**
-     * Validates the given JSON string and converts it into a JSONObject.
+     * Validates the structure of the given JSON string and converts it into a JSONObject.
      * The JSONObject returned will never be {@code null} and will always contain a capability. If the capability is
-     * {@code ProcessingCapability.YES} or {@code ProcessingCapability.MAYBE}, then the JSONObject contains valid
-     * configs.
+     * {@code ProcessingCapability.YES} or {@code ProcessingCapability.MAYBE}, then the JSONObject contains the
+     * appropriate attributes.
      *
      * This operation logs debug messages when in the 'check' phase and error messages when in the 'generate' phase.
      *
@@ -163,6 +167,220 @@ public class RandomGenericTotalPositionProgressionService
      * {@link ProcessingCapability}
      */
     private JSONObject getJSONConfigs(String configs, boolean checkPhase) {
+
+        if (checkPhase)
+            logger.info("Verifying that this service can process the configurations.");
+
+        // The JSON object to return.
+        // This JSON object will have the capability injected into it before being returned.
+        JSONObject jsonConfigs = null;
+
+        do {
+
+            if (configs == null) {
+
+                String errorMessage = "No configurations provided.";
+                if (checkPhase)
+                    logger.debug(errorMessage);
+                else
+                    logger.error(errorMessage);
+
+                break;
+            }
+
+            try {
+
+                // Instantiate a JSON object from the string.
+                // Throws: JSONException
+                jsonConfigs = new JSONObject(configs);
+
+            } catch (JSONException ex) {
+
+                String errorMessage = "Could not parse the configuration string into JSON. Cause: {}";
+                if (checkPhase)
+                    logger.debug(errorMessage, ex.getMessage());
+                else
+                    logger.error(errorMessage, ex.getMessage());
+
+                break;
+            }
+
+            /*
+             * Validate that the configurations contain the cut count attribute.
+             */
+
+            try {
+
+                // Verify that the configs contain a 'cut count' attribute.
+                // Throws: JSONException
+                jsonConfigs.get(CUT_COUNT_KEY);
+
+            } catch (JSONException ex) {
+
+                String errorMessage = "Missing '{}' configuration. Cause: {}";
+                if (checkPhase)
+                    logger.debug(errorMessage, CUT_COUNT_KEY, ex.getMessage());
+                else
+                    logger.error(errorMessage, CUT_COUNT_KEY, ex.getMessage());
+
+                break;
+            }
+
+            /*
+             * Validate that the configurations contain the depth count attribute.
+             */
+
+            try {
+
+                // Verify that the configs contain a 'depth count' attribute.
+                // Throws: JSONException
+                jsonConfigs.get(DEPTH_COUNT_KEY);
+
+            } catch (JSONException ex) {
+
+                String errorMessage = "Missing '{}' configuration. Cause: {}";
+                if (checkPhase)
+                    logger.debug(errorMessage, DEPTH_COUNT_KEY, ex.getMessage());
+                else
+                    logger.error(errorMessage, DEPTH_COUNT_KEY, ex.getMessage());
+
+                break;
+            }
+
+            /*
+             * Validate that the configurations contain the starting depth attribute.
+             */
+
+            try {
+
+                // Verify that the configs contain a 'starting depth' attribute.
+                // Throws: JSONException
+                jsonConfigs.get(STARTING_DEPTH_KEY);
+
+            } catch (JSONException ex) {
+
+                String errorMessage = "Missing '{}' configuration. Cause: {}";
+                if (checkPhase)
+                    logger.debug(errorMessage, STARTING_DEPTH_KEY, ex.getMessage());
+                else
+                    logger.error(errorMessage, STARTING_DEPTH_KEY, ex.getMessage());
+
+                break;
+            }
+
+            /*
+             * Validate that the configurations contain the double step progression.
+             */
+
+            try {
+
+                // Verify that the configs contain a 'double step progression' attribute.
+                // Throws: JSONException
+                jsonConfigs.get(DOUBLE_STEP_PROGRESSION_KEY);
+
+            } catch (JSONException ex) {
+
+                String errorMessage = "Missing '{}' configuration. Cause: {}";
+                if (checkPhase)
+                    logger.debug(errorMessage, DOUBLE_STEP_PROGRESSION_KEY, ex.getMessage());
+                else
+                    logger.error(errorMessage, DOUBLE_STEP_PROGRESSION_KEY, ex.getMessage());
+
+                break;
+            }
+
+            /*
+             * Validate that the configurations contain the MACS attribute.
+             */
+
+            try {
+
+                // Verify that the configs contain a 'MACS' attribute.
+                // Throws: JSONException
+                jsonConfigs.get(MACS_KEY);
+
+            } catch (JSONException ex) {
+
+                String errorMessage = "Missing '{}' configuration. Cause: {}";
+                if (checkPhase)
+                    logger.debug(errorMessage, MACS_KEY, ex.getMessage());
+                else
+                    logger.error(errorMessage, MACS_KEY, ex.getMessage());
+
+                break;
+            }
+
+            // The configurations contain extra, unrecognized attributes.
+            if (jsonConfigs.keySet().size() > 5) {
+
+                if (checkPhase)
+                    logger.info("This service can process the configurations if necessary.");
+
+                String errorMessage = "The configurations contain the following attributes that will be ignored:";
+                if (checkPhase)
+                    logger.debug(errorMessage);
+                else
+                    logger.error(errorMessage);
+
+                jsonConfigs.keySet().stream()
+                        .filter(k -> (!k.equals(CUT_COUNT_KEY) && !k.equals(DEPTH_COUNT_KEY) &&
+                                !k.equals(STARTING_DEPTH_KEY) && !k.equals(DOUBLE_STEP_PROGRESSION_KEY) &&
+                                !k.equals(MACS_KEY)))
+                        .forEach(k -> {
+
+                            String errorMessage2 = "Key: {}";
+                            if (checkPhase)
+                                logger.debug(errorMessage2, k);
+                            else
+                                logger.error(errorMessage2, k);
+                        });
+
+                // Inject the 'maybe' capability into the JSON object.
+                jsonConfigs.put(CAPABILITY_KEY, ProcessingCapability.MAYBE);
+            }
+
+            // The configuration is a match.
+            else {
+
+                if (checkPhase)
+                    logger.info("This service prefers to process the configurations.");
+
+                // Inject the 'yes' capability into the JSON object.
+                jsonConfigs.put(CAPABILITY_KEY, ProcessingCapability.YES);
+            }
+
+            // Return the JSON object.
+            return jsonConfigs;
+        }
+        while (false);
+
+        if (checkPhase)
+            logger.info("This service CANNOT process the configurations.");
+
+        // Construct an empty JSON object if necessary.
+        if (jsonConfigs == null)
+            jsonConfigs = new JSONObject();
+
+        // Inject the 'no' capability into the JSON object.
+        jsonConfigs.put(CAPABILITY_KEY, ProcessingCapability.NO);
+
+        // Return the JSON object.
+        return jsonConfigs;
+    }
+
+    /**
+     * Validates the given JSON string and converts it into a JSONObject.
+     * The JSONObject returned will never be {@code null} and will always contain a capability. If the capability is
+     * {@code ProcessingCapability.YES} or {@code ProcessingCapability.MAYBE}, then the JSONObject contains valid
+     * configs.
+     *
+     * This operation logs debug messages when in the 'check' phase and error messages when in the 'generate' phase.
+     *
+     * @param configs the JSON configs string to validate and convert
+     * @return the JSONObject constructed from the JSON configs string, including the
+     * {@link ProcessingCapability}
+     */
+    private JSONObject validateJSONConfigs(JSONObject configs) {
 
         if (checkPhase)
             logger.info("Verifying that this service can process the configurations.");
