@@ -2,6 +2,7 @@ package com.eames.masterkey.service.progression.services.totalposition;
 
 import com.eames.masterkey.service.ProcessingCapability;
 import com.eames.masterkey.service.progression.ProgressionServiceException;
+import com.eames.masterkey.service.progression.ProgressionServiceResults;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
@@ -351,8 +352,8 @@ public class RandomGenericTotalPositionProgressionServiceTest {
 
         try {
 
-            String bittingList = service.generateBittingList(configs.toString());
-            assertNotNull(bittingList);
+            ProgressionServiceResults results = service.generateBittingList(configs.toString());
+            assertNotNull(results);
 
         } catch (ProgressionServiceException ex) {
 
