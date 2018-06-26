@@ -59,6 +59,7 @@ public class RandomGenericTotalPositionProgressionService
 
     // The double step progression configuration
     private static final String DOUBLE_STEP_PROGRESSION_KEY = "doubleStepProgression";
+    private static final int DOUBLE_STEP_DEPTH_MIN = 4;
 
     // The Maximum Adjacent Cut Specification
     private static final String MACS_KEY = "macs";
@@ -76,8 +77,6 @@ public class RandomGenericTotalPositionProgressionService
     public ProcessingCapability canProcessConfigs(String configs) {
 
         logger.info("Verifying that this service can process the configurations.");
-
-        // TODO: Need to NOT validate values, only structure.
 
         // Convert the JSON string in to a JSONObject and validate.
         // Pass a 'true' to indicate that we're in the 'check' phase.
@@ -108,9 +107,9 @@ public class RandomGenericTotalPositionProgressionService
             throw new ProgressionServiceException(errorMessage);
         }
 
-        // Validate the JSON configs object .
+        // Validate the JSON configs object's values.
         // Throws ProgressionServiceException
-        valiateJSONConfigs(jsonConfigs);
+        validateJSONConfigValues(jsonConfigs);
 
         // Generate the progression criteria from the configs.
         // Throws: ProgressionServiceException
@@ -191,7 +190,7 @@ public class RandomGenericTotalPositionProgressionService
             }
 
             /*
-             * Validate that the configurations contain the cut count attribute.
+             * Verify that the configurations contain the cut count attribute.
              */
 
             try {
@@ -212,7 +211,7 @@ public class RandomGenericTotalPositionProgressionService
             }
 
             /*
-             * Validate that the configurations contain the depth count attribute.
+             * Verify that the configurations contain the depth count attribute.
              */
 
             try {
@@ -233,7 +232,7 @@ public class RandomGenericTotalPositionProgressionService
             }
 
             /*
-             * Validate that the configurations contain the starting depth attribute.
+             * Verify that the configurations contain the starting depth attribute.
              */
 
             try {
@@ -254,7 +253,7 @@ public class RandomGenericTotalPositionProgressionService
             }
 
             /*
-             * Validate that the configurations contain the double step progression.
+             * Verify that the configurations contain the double step progression.
              */
 
             try {
@@ -275,7 +274,7 @@ public class RandomGenericTotalPositionProgressionService
             }
 
             /*
-             * Validate that the configurations contain the MACS attribute.
+             * Verify that the configurations contain the MACS attribute.
              */
 
             try {
@@ -294,6 +293,10 @@ public class RandomGenericTotalPositionProgressionService
 
                 break;
             }
+
+            /*
+             * Check whether the configurations contain unrecognized attributes.
+             */
 
             // The configurations contain extra, unrecognized attributes.
             if (jsonConfigs.keySet().size() > 5) {
@@ -354,318 +357,212 @@ public class RandomGenericTotalPositionProgressionService
     }
 
     /**
-     * Validates the given JSON string and converts it into a JSONObject.
-     * The JSONObject returned will never be {@code null} and will always contain a capability. If the capability is
-     * {@code ProcessingCapability.YES} or {@code ProcessingCapability.MAYBE}, then the JSONObject contains valid
-     * configs.
+     * Validates the values of given JSON configs.
      *
-     * This operation logs debug messages when in the 'check' phase and error messages when in the 'generate' phase.
-     *
-     * @param configs the JSON configs string to validate and convert
-     * @return the JSONObject constructed from the JSON configs string, including the
-     * {@link ProcessingCapability}
+     * @param jsonConfigs the JSON configs string to validate
+     * @throws ProgressionServiceException
      */
-    private JSONObject validateJSONConfigs(JSONObject configs) {
+    private void validateJSONConfigValues(JSONObject jsonConfigs)
+        throws ProgressionServiceException {
 
-        if (checkPhase)
-            logger.info("Verifying that this service can process the configurations.");
+        // The 'configs' will never be null.
 
-        // The JSON object to return.
-        // This JSON object will have the capability injected into it before being returned.
-        JSONObject jsonConfigs = null;
-
-        do {
-
-            if (configs == null) {
-
-                String errorMessage = "No configurations provided.";
-                if (checkPhase)
-                    logger.debug(errorMessage);
-                else
-                    logger.error(errorMessage);
-
-                break;
-            }
-
-            try {
-
-                // Instantiate a JSON object from the string.
-                // Throws: JSONException
-                jsonConfigs = new JSONObject(configs);
-
-            } catch (JSONException ex) {
-
-                String errorMessage = "Could not parse the configuration string into JSON. Cause: {}";
-                if (checkPhase)
-                    logger.debug(errorMessage, ex.getMessage());
-                else
-                    logger.error(errorMessage, ex.getMessage());
-
-                break;
-            }
+        try {
 
             /*
-             * Validate that the configurations contain the cut count attribute and that its value is valid.
+             * Validate that the 'cut count' attribute is valid.
              */
 
-            Object cutCountObj;
-            try {
-
-                // Get the cut count.
-                // Throws: JSONException
-                cutCountObj = jsonConfigs.get(CUT_COUNT_KEY);
-
-            } catch (JSONException ex) {
-
-                String errorMessage = "Missing '{}' configuration. Cause: {}";
-                if (checkPhase)
-                    logger.debug(errorMessage, CUT_COUNT_KEY, ex.getMessage());
-                else
-                    logger.error(errorMessage, CUT_COUNT_KEY, ex.getMessage());
-
-                break;
-            }
+            // Get and validate the 'cut count'.
+            // Throws: JSONException
+            Object cutCountObj = jsonConfigs.get(CUT_COUNT_KEY);
             if (!(cutCountObj instanceof Integer)) {
 
-                String errorMessage = "The '{}' configuration is not an integer.";
-                if (checkPhase)
-                    logger.debug(errorMessage, CUT_COUNT_KEY);
-                else
-                    logger.error(errorMessage, CUT_COUNT_KEY);
+                StringBuilder sb = new StringBuilder();
+                sb.append("The '");
+                sb.append(CUT_COUNT_KEY);
+                sb.append("' configuration is not an integer.");
+                String errorMessage = sb.toString();
+                logger.error(errorMessage);
 
-                break;
+                throw new ProgressionServiceException(errorMessage);
             }
             Integer cutCount = (Integer) cutCountObj;
             if ((cutCount < CUT_COUNT_MIN) || (cutCount > CUT_COUNT_MAX)) {
 
-                String errorMessage = "The '{}' configuration is out of range ({}) [{}, {}].";
-                if (checkPhase)
-                    logger.debug(errorMessage, CUT_COUNT_KEY, cutCount, CUT_COUNT_MIN, CUT_COUNT_MAX);
-                else
-                    logger.error(errorMessage, CUT_COUNT_KEY, cutCount, CUT_COUNT_MIN, CUT_COUNT_MAX);
+                StringBuilder sb = new StringBuilder();
+                sb.append("The '");
+                sb.append(CUT_COUNT_KEY);
+                sb.append("' configuration is out of range (");
+                sb.append(cutCount);
+                sb.append(") [");
+                sb.append(CUT_COUNT_MIN);
+                sb.append(", ");
+                sb.append(CUT_COUNT_MAX);
+                sb.append("].");
+                String errorMessage = sb.toString();
+                logger.error(errorMessage);
 
-                break;
+                throw new ProgressionServiceException(errorMessage);
             }
 
             /*
-             * Validate that the configurations contain the depth count attribute and that its value is valid.
+             * Validate that the 'depth count' attribute is valid.
              */
 
-            Object depthCountObj;
-            try {
-
-                // Get the depth count.
-                // Throws: JSONException
-                depthCountObj = jsonConfigs.get(DEPTH_COUNT_KEY);
-
-            } catch (JSONException ex) {
-
-                String errorMessage = "Missing '{}' configuration. Cause: {}";
-                if (checkPhase)
-                    logger.debug(errorMessage, DEPTH_COUNT_KEY, ex.getMessage());
-                else
-                    logger.error(errorMessage, DEPTH_COUNT_KEY, ex.getMessage());
-
-                break;
-            }
+            // Get and validate the 'depth count'.
+            // Throws: JSONException
+            Object depthCountObj = jsonConfigs.get(DEPTH_COUNT_KEY);
             if (!(depthCountObj instanceof Integer)) {
 
-                String errorMessage = "The '{}' configuration is not an integer.";
-                if (checkPhase)
-                    logger.debug(errorMessage, DEPTH_COUNT_KEY);
-                else
-                    logger.error(errorMessage, DEPTH_COUNT_KEY);
+                StringBuilder sb = new StringBuilder();
+                sb.append("The '");
+                sb.append(DEPTH_COUNT_KEY);
+                sb.append("' configuration is not an integer.");
+                String errorMessage = sb.toString();
+                logger.error(errorMessage);
 
-                break;
+                throw new ProgressionServiceException(errorMessage);
             }
             Integer depthCount = (Integer) depthCountObj;
             if ((depthCount < DEPTH_COUNT_MIN) || (depthCount > DEPTH_COUNT_MAX)) {
 
-                String errorMessage = "The '{} configuration is out of range ({}) [{}, {}].";
-                if (checkPhase)
-                    logger.debug(errorMessage, DEPTH_COUNT_KEY, depthCount, DEPTH_COUNT_MIN, DEPTH_COUNT_MAX);
-                else
-                    logger.error(errorMessage, DEPTH_COUNT_KEY, depthCount, DEPTH_COUNT_MIN, DEPTH_COUNT_MAX);
+                StringBuilder sb = new StringBuilder();
+                sb.append("The '");
+                sb.append(DEPTH_COUNT_KEY);
+                sb.append("' configuration is out of range (");
+                sb.append(depthCount);
+                sb.append(") [");
+                sb.append(DEPTH_COUNT_MIN);
+                sb.append(", ");
+                sb.append(DEPTH_COUNT_MAX);
+                sb.append("].");
+                String errorMessage = sb.toString();
+                logger.error(errorMessage);
 
-                break;
+                throw new ProgressionServiceException(errorMessage);
             }
 
             /*
-             * Validate that the configurations contain the starting depth attribute and that its value is valid.
+             * Validate that the 'starting depth' attribute is valid.
              */
 
-            Object startingDepthObj;
-            try {
-
-                // Get the starting depth.
-                // Throws: JSONException
-                startingDepthObj = jsonConfigs.get(STARTING_DEPTH_KEY);
-
-            } catch (JSONException ex) {
-
-                String errorMessage = "Missing '{}' configuration. Cause: {}";
-                if (checkPhase)
-                    logger.debug(errorMessage, STARTING_DEPTH_KEY, ex.getMessage());
-                else
-                    logger.error(errorMessage, STARTING_DEPTH_KEY, ex.getMessage());
-
-                break;
-            }
+            // Get and validate the 'starting depth'.
+            // Throws: JSONException
+            Object startingDepthObj = jsonConfigs.get(STARTING_DEPTH_KEY);
             if (!(startingDepthObj instanceof Integer)) {
 
-                String errorMessage = "The '{}' configuration is not an integer.";
-                if (checkPhase)
-                    logger.debug(errorMessage, STARTING_DEPTH_KEY);
-                else
-                    logger.error(errorMessage, STARTING_DEPTH_KEY);
+                StringBuilder sb = new StringBuilder();
+                sb.append("The '");
+                sb.append(STARTING_DEPTH_KEY);
+                sb.append("' configuration is not an integer.");
+                String errorMessage = sb.toString();
+                logger.error(errorMessage);
 
-                break;
+                throw new ProgressionServiceException(errorMessage);
             }
             Integer startingDepth = (Integer) startingDepthObj;
             if ((startingDepth < STARTING_DEPTH_MIN) || (startingDepth > STARTING_DEPTH_MAX)) {
 
-                String errorMessage = "The '{}' configuration is out of range ({}) [{}, {}].";
-                if (checkPhase)
-                    logger.debug(errorMessage, STARTING_DEPTH_KEY, startingDepth, STARTING_DEPTH_MIN,
-                            STARTING_DEPTH_MAX);
-                else
-                    logger.error(errorMessage, STARTING_DEPTH_KEY, startingDepth, STARTING_DEPTH_MIN,
-                            STARTING_DEPTH_MAX);
+                StringBuilder sb = new StringBuilder();
+                sb.append("The '");
+                sb.append(STARTING_DEPTH_KEY);
+                sb.append("' configuration is out of range (");
+                sb.append(startingDepth);
+                sb.append(") [");
+                sb.append(STARTING_DEPTH_MIN);
+                sb.append(", ");
+                sb.append(STARTING_DEPTH_MAX);
+                sb.append("].");
+                String errorMessage = sb.toString();
+                logger.error(errorMessage);
 
-                break;
+                throw new ProgressionServiceException(errorMessage);
             }
 
             /*
-             * Validate that the configurations contain the double step progression attribute and that its value is valid.
+             * Validate that the 'double step progression' attribute is valid.
              */
 
-            Object doubleStepProgressionObj;
-            try {
-
-                // Get the double step progression flag.
-                // Throws: JSONException
-                doubleStepProgressionObj = jsonConfigs.get(DOUBLE_STEP_PROGRESSION_KEY);
-
-            } catch (JSONException ex) {
-
-                String errorMessage = "Missing '{}' configuration. Cause: {}";
-                if (checkPhase)
-                    logger.debug(errorMessage, DOUBLE_STEP_PROGRESSION_KEY, ex.getMessage());
-                else
-                    logger.error(errorMessage, DOUBLE_STEP_PROGRESSION_KEY, ex.getMessage());
-
-                break;
-            }
+            // Get and validate the 'double step progression' flag.
+            // Throws: JSONException
+            Object doubleStepProgressionObj = jsonConfigs.get(DOUBLE_STEP_PROGRESSION_KEY);
             if (!(doubleStepProgressionObj instanceof Boolean)) {
 
-                String errorMessage = "The '{}' configuration is not a boolean.";
-                if (checkPhase)
-                    logger.debug(errorMessage, DOUBLE_STEP_PROGRESSION_KEY);
-                else
-                    logger.error(errorMessage, DOUBLE_STEP_PROGRESSION_KEY);
+                StringBuilder sb = new StringBuilder();
+                sb.append("The '");
+                sb.append(DOUBLE_STEP_PROGRESSION_KEY);
+                sb.append("' configuration is not a boolean.");
+                String errorMessage = sb.toString();
+                logger.error(errorMessage);
 
-                break;
+                throw new ProgressionServiceException(errorMessage);
+            }
+            Boolean doubleStepProgression = (Boolean) doubleStepProgressionObj;
+            if (doubleStepProgression && ((depthCount % 2 != 0) || (depthCount < DOUBLE_STEP_DEPTH_MIN))) {
+
+                StringBuilder sb = new StringBuilder();
+                sb.append("The '");
+                sb.append(DOUBLE_STEP_PROGRESSION_KEY);
+                sb.append("' configuration is not valid for an odd depth count or a depth count less than ");
+                sb.append(DOUBLE_STEP_DEPTH_MIN);
+                sb.append(" (");
+                sb.append(depthCount);
+                sb.append(").");
+                String errorMessage = sb.toString();
+                logger.error(errorMessage);
+
+                throw new ProgressionServiceException(errorMessage);
             }
 
             /*
-             * Validate that the configurations contain the MACS attribute and that its value is valid.
+             * Validate that the 'MACS' attribute is valid.
              */
 
-            Object macsObj;
-            try {
-
-                // Get the MACS.
-                // Throws: JSONException
-                macsObj = jsonConfigs.get(MACS_KEY);
-
-            } catch (JSONException ex) {
-
-                String errorMessage = "Missing '{}' configuration. Cause: {}";
-                if (checkPhase)
-                    logger.debug(errorMessage, MACS_KEY, ex.getMessage());
-                else
-                    logger.error(errorMessage, MACS_KEY, ex.getMessage());
-
-                break;
-            }
+            // Get and validate the 'MACS'.
+            // Throws: JSONException
+            Object macsObj = jsonConfigs.get(MACS_KEY);
             if (!(macsObj instanceof Integer)) {
 
-                String errorMessage = "The '{}' configuration is not an integer.";
-                if (checkPhase)
-                    logger.debug(errorMessage, MACS_KEY);
-                else
-                    logger.error(errorMessage, MACS_KEY);
+                StringBuilder sb = new StringBuilder();
+                sb.append("The '");
+                sb.append(MACS_KEY);
+                sb.append("' configuration is not an integer.");
+                String errorMessage = sb.toString();
+                logger.error(errorMessage);
 
-                break;
+                throw new ProgressionServiceException(errorMessage);
             }
             Integer macs = (Integer) macsObj;
             if ((macs < MACS_MIN) || (macs > MACS_MAX)) {
 
-                String errorMessage = "The '{}' configuration is out of range ({}) [{}, {}].";
-                if (checkPhase)
-                    logger.debug(errorMessage, MACS_KEY, macs, MACS_MIN, MACS_MAX);
-                else
-                    logger.error(errorMessage, MACS_KEY, macs, MACS_MIN, MACS_MAX);
+                StringBuilder sb = new StringBuilder();
+                sb.append("The '");
+                sb.append(MACS_KEY);
+                sb.append("' configuration is out of range (");
+                sb.append(macs);
+                sb.append(") [");
+                sb.append(MACS_MIN);
+                sb.append(", ");
+                sb.append(MACS_MAX);
+                sb.append("].");
+                String errorMessage = sb.toString();
+                logger.error(errorMessage);
 
-                break;
+                throw new ProgressionServiceException(errorMessage);
             }
 
-            // The configurations contain extra, unrecognized attributes.
-            if (jsonConfigs.keySet().size() > 5) {
+        } catch (JSONException ex) {
 
-                if (checkPhase)
-                    logger.info("This service can process the configurations if necessary.");
+            StringBuilder sb = new StringBuilder();
+            sb.append("An unexpected error occurred.");
+            sb.append(" ");
+            sb.append(ex.getMessage());
+            String errorMessage = sb.toString();
+            logger.error(errorMessage);
 
-                String errorMessage = "The configurations contain the following attributes that will be ignored:";
-                if (checkPhase)
-                    logger.debug(errorMessage);
-                else
-                    logger.error(errorMessage);
-
-                jsonConfigs.keySet().stream()
-                        .filter(k -> (!k.equals(CUT_COUNT_KEY) && !k.equals(DEPTH_COUNT_KEY) &&
-                                !k.equals(STARTING_DEPTH_KEY) && !k.equals(DOUBLE_STEP_PROGRESSION_KEY) &&
-                                !k.equals(MACS_KEY)))
-                        .forEach(k -> {
-
-                            String errorMessage2 = "Key: {}";
-                            if (checkPhase)
-                                logger.debug(errorMessage2, k);
-                            else
-                                logger.error(errorMessage2, k);
-                        });
-
-                // Inject the 'maybe' capability into the JSON object.
-                jsonConfigs.put(CAPABILITY_KEY, ProcessingCapability.MAYBE);
-            }
-
-            // The configuration is a match.
-            else {
-
-                if (checkPhase)
-                    logger.info("This service prefers to process the configurations.");
-
-                // Inject the 'yes' capability into the JSON object.
-                jsonConfigs.put(CAPABILITY_KEY, ProcessingCapability.YES);
-            }
-
-            // Return the JSON object.
-            return jsonConfigs;
+            throw new ProgressionServiceException(errorMessage);
         }
-        while (false);
-
-        if (checkPhase)
-            logger.info("This service CANNOT process the configurations.");
-
-        // Construct an empty JSON object if necessary.
-        if (jsonConfigs == null)
-            jsonConfigs = new JSONObject();
-
-        // Inject the 'no' capability into the JSON object.
-        jsonConfigs.put(CAPABILITY_KEY, ProcessingCapability.NO);
-
-        // Return the JSON object.
-        return jsonConfigs;
     }
 
     /**

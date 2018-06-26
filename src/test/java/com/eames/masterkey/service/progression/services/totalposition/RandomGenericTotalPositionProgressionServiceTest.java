@@ -87,104 +87,9 @@ public class RandomGenericTotalPositionProgressionServiceTest {
     }
 
     @Test
-    public void testCanProcessConfigs_WrongTypeCutCount() {
-
-        configs.put("cutCount", "6");
-
-        ProcessingCapability capability = service.canProcessConfigs(configs.toString());
-
-        assertEquals(ProcessingCapability.NO, capability);
-    }
-
-    @Test
-    public void testCanProcessConfigs_TooSmallCutCount() {
-
-        configs.put("cutCount", 2);
-
-        ProcessingCapability capability = service.canProcessConfigs(configs.toString());
-
-        assertEquals(ProcessingCapability.NO, capability);
-    }
-
-    @Test
-    public void testCanProcessConfigs_MinCutCount() {
-
-        configs.put("cutCount", 3);
-
-        ProcessingCapability capability = service.canProcessConfigs(configs.toString());
-
-        assertEquals(ProcessingCapability.YES, capability);
-    }
-
-    @Test
-    public void testCanProcessConfigs_MaxCutCount() {
-
-        configs.put("cutCount", 7);
-
-        ProcessingCapability capability = service.canProcessConfigs(configs.toString());
-
-        assertEquals(ProcessingCapability.YES, capability);
-    }
-
-    @Test
-    public void testCanProcessConfigs_TooLargeCutCount() {
-
-        configs.put("cutCount", 8);
-
-        ProcessingCapability capability = service.canProcessConfigs(configs.toString());
-
-        assertEquals(ProcessingCapability.NO, capability);
-    }
-
-    @Test
     public void testCanProcessConfigs_MissingDepthCount() {
 
         configs.remove("depthCount");
-        ProcessingCapability capability = service.canProcessConfigs(configs.toString());
-
-        assertEquals(ProcessingCapability.NO, capability);
-    }
-
-    @Test
-    public void testCanProcessConfigs_WrongTypeDepthCount() {
-
-        configs.put("depthCount", "10");
-        ProcessingCapability capability = service.canProcessConfigs(configs.toString());
-
-        assertEquals(ProcessingCapability.NO, capability);
-    }
-
-    @Test
-    public void testCanProcessConfigs_TooSmallDepthCount() {
-
-        configs.put("depthCount", 2);
-        ProcessingCapability capability = service.canProcessConfigs(configs.toString());
-
-        assertEquals(ProcessingCapability.NO, capability);
-    }
-
-    @Test
-    public void testCanProcessConfigs_MinDepthCount() {
-
-        configs.put("depthCount", 3);
-        ProcessingCapability capability = service.canProcessConfigs(configs.toString());
-
-        assertEquals(ProcessingCapability.YES, capability);
-    }
-
-    @Test
-    public void testCanProcessConfigs_MaxDepthCount() {
-
-        configs.put("depthCount", 10);
-        ProcessingCapability capability = service.canProcessConfigs(configs.toString());
-
-        assertEquals(ProcessingCapability.YES, capability);
-    }
-
-    @Test
-    public void testCanProcessConfigs_TooLargeDepthCount() {
-
-        configs.put("depthCount", 11);
         ProcessingCapability capability = service.canProcessConfigs(configs.toString());
 
         assertEquals(ProcessingCapability.NO, capability);
@@ -200,51 +105,6 @@ public class RandomGenericTotalPositionProgressionServiceTest {
     }
 
     @Test
-    public void testCanProcessConfigs_WrongTypeStartingDepth() {
-
-        configs.put("startingDepth", "0");
-        ProcessingCapability capability = service.canProcessConfigs(configs.toString());
-
-        assertEquals(ProcessingCapability.NO, capability);
-    }
-
-    @Test
-    public void testCanProcessConfigs_TooSmallStartingDepth() {
-
-        configs.put("startingDepth", -1);
-        ProcessingCapability capability = service.canProcessConfigs(configs.toString());
-
-        assertEquals(ProcessingCapability.NO, capability);
-    }
-
-    @Test
-    public void testCanProcessConfigs_MinStartingDepth() {
-
-        configs.put("startingDepth", 0);
-        ProcessingCapability capability = service.canProcessConfigs(configs.toString());
-
-        assertEquals(ProcessingCapability.YES, capability);
-    }
-
-    @Test
-    public void testCanProcessConfigs_MaxStartingDepth() {
-
-        configs.put("startingDepth", 1);
-        ProcessingCapability capability = service.canProcessConfigs(configs.toString());
-
-        assertEquals(ProcessingCapability.YES, capability);
-    }
-
-    @Test
-    public void testCanProcessConfigs_TooLargeStartingDepth() {
-
-        configs.put("startingDepth", 2);
-        ProcessingCapability capability = service.canProcessConfigs(configs.toString());
-
-        assertEquals(ProcessingCapability.NO, capability);
-    }
-
-    @Test
     public void testCanProcessConfigs_MissingProgressionStep() {
 
         configs.remove("doubleStepProgression");
@@ -252,16 +112,6 @@ public class RandomGenericTotalPositionProgressionServiceTest {
 
         assertEquals(ProcessingCapability.NO, capability);
     }
-
-    @Test
-    public void testCanProcessConfigs_WrongTypeProgressionStep() {
-
-        configs.put("doubleStepProgression", "2");
-        ProcessingCapability capability = service.canProcessConfigs(configs.toString());
-
-        assertEquals(ProcessingCapability.NO, capability);
-    }
-
     @Test
     public void testCanProcessConfigs_MissingMACS() {
 
@@ -270,52 +120,6 @@ public class RandomGenericTotalPositionProgressionServiceTest {
 
         assertEquals(ProcessingCapability.NO, capability);
     }
-
-    @Test
-    public void testCanProcessConfigs_WrongTypeMACS() {
-
-        configs.put("macs", "2");
-        ProcessingCapability capability = service.canProcessConfigs(configs.toString());
-
-        assertEquals(ProcessingCapability.NO, capability);
-    }
-
-    @Test
-    public void testCanProcessConfigs_TooSmallMACS() {
-
-        configs.put("macs", 0);
-        ProcessingCapability capability = service.canProcessConfigs(configs.toString());
-
-        assertEquals(ProcessingCapability.NO, capability);
-    }
-
-    @Test
-    public void testCanProcessConfigs_MinMACS() {
-
-        configs.put("macs", 1);
-        ProcessingCapability capability = service.canProcessConfigs(configs.toString());
-
-        assertEquals(ProcessingCapability.YES, capability);
-    }
-
-    @Test
-    public void testCanProcessConfigs_MaxMACS() {
-
-        configs.put("macs", 10);
-        ProcessingCapability capability = service.canProcessConfigs(configs.toString());
-
-        assertEquals(ProcessingCapability.YES, capability);
-    }
-
-    @Test
-    public void testCanProcessConfigs_TooLargeMACS() {
-
-        configs.put("macs", 11);
-        ProcessingCapability capability = service.canProcessConfigs(configs.toString());
-
-        assertEquals(ProcessingCapability.NO, capability);
-    }
-
     @Test
     public void testCanProcessConfigs_ExtraConfig() {
 
@@ -344,11 +148,8 @@ public class RandomGenericTotalPositionProgressionServiceTest {
         }
     }
 
-    // TODO: Need more .generateBittingList() tests.
-    // TODO: exceptions, json parser testing results for source, criteria, bitting list.
-
     @Test
-    public void testGenerateBittingList_() {
+    public void testGenerateBittingList_Valid() {
 
         try {
 
@@ -360,4 +161,401 @@ public class RandomGenericTotalPositionProgressionServiceTest {
             fail(ex.getMessage());
         }
     }
+
+    @Test
+    public void testGenerateBittingList_WrongTypeCutCount() {
+
+        configs.put("cutCount", "6");
+        try {
+
+            // Throws: ProgressionServiceException
+            service.generateBittingList(configs.toString());
+
+            fail();
+
+        } catch (ProgressionServiceException ex) {
+
+            // Expected results...
+        }
+    }
+
+    @Test
+    public void testGenerateBittingList_TooSmallCutCount() {
+
+        configs.put("cutCount", 2);
+        try {
+
+            // Throws: ProgressionServiceException
+            service.generateBittingList(configs.toString());
+
+            fail();
+
+        } catch (ProgressionServiceException ex) {
+
+            // Expected results...
+        }
+    }
+
+    @Test
+    public void testGenerateBittingList_MinCutCount() {
+
+        configs.put("cutCount", 3);
+        try {
+
+            ProgressionServiceResults results = service.generateBittingList(configs.toString());
+            assertNotNull(results);
+
+        } catch (ProgressionServiceException ex) {
+
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void testGenerateBittingList_MaxCutCount() {
+
+        configs.put("cutCount", 7);
+        try {
+
+            ProgressionServiceResults results = service.generateBittingList(configs.toString());
+            assertNotNull(results);
+
+        } catch (ProgressionServiceException ex) {
+
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void testGenerateBittingList_TooLargeCutCount() {
+
+        configs.put("cutCount", 8);
+        try {
+
+            // Throws: ProgressionServiceException
+            service.generateBittingList(configs.toString());
+
+            fail();
+
+        } catch (ProgressionServiceException ex) {
+
+            // Expected results...
+        }
+    }
+
+    @Test
+    public void testGenerateBittingList_WrongTypeDepthCount() {
+
+        configs.put("depthCount", "10");
+        try {
+
+            // Throws: ProgressionServiceException
+            service.generateBittingList(configs.toString());
+
+            fail();
+
+        } catch (ProgressionServiceException ex) {
+
+            // Expected results...
+        }
+    }
+
+    @Test
+    public void testGenerateBittingList_TooSmallDepthCount() {
+
+        configs.put("depthCount", 2);
+        try {
+
+            // Throws: ProgressionServiceException
+            service.generateBittingList(configs.toString());
+
+            fail();
+
+        } catch (ProgressionServiceException ex) {
+
+            // Expected results...
+        }
+    }
+
+    @Test
+    public void testGenerateBittingList_MinDepthCount() {
+
+        configs.put("doubleStepProgression", false);
+        configs.put("depthCount", 3);
+        try {
+
+            ProgressionServiceResults results = service.generateBittingList(configs.toString());
+            assertNotNull(results);
+
+        } catch (ProgressionServiceException ex) {
+
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void testGenerateBittingList_MaxDepthCount() {
+
+        configs.put("depthCount", 10);
+        try {
+
+            ProgressionServiceResults results = service.generateBittingList(configs.toString());
+            assertNotNull(results);
+
+        } catch (ProgressionServiceException ex) {
+
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void testGenerateBittingList_TooLargeDepthCount() {
+
+        configs.put("depthCount", 11);
+        try {
+
+            // Throws: ProgressionServiceException
+            service.generateBittingList(configs.toString());
+
+            fail();
+
+        } catch (ProgressionServiceException ex) {
+
+            // Expected results...
+        }
+    }
+
+
+    @Test
+    public void testGenerateBittingList_WrongTypeStartingDepth() {
+
+        configs.put("startingDepth", "0");
+        try {
+
+            // Throws: ProgressionServiceException
+            service.generateBittingList(configs.toString());
+
+            fail();
+
+        } catch (ProgressionServiceException ex) {
+
+            // Expected results...
+        }
+    }
+
+    @Test
+    public void testGenerateBittingList_TooSmallStartingDepth() {
+
+        configs.put("startingDepth", -1);
+        try {
+
+            // Throws: ProgressionServiceException
+            service.generateBittingList(configs.toString());
+
+            fail();
+
+        } catch (ProgressionServiceException ex) {
+
+            // Expected results...
+        }
+    }
+
+    @Test
+    public void testGenerateBittingList_MinStartingDepth() {
+
+        configs.put("startingDepth", 0);
+        try {
+
+            ProgressionServiceResults results = service.generateBittingList(configs.toString());
+            assertNotNull(results);
+
+        } catch (ProgressionServiceException ex) {
+
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void testGenerateBittingList_MaxStartingDepth() {
+
+        configs.put("startingDepth", 1);
+        try {
+
+            ProgressionServiceResults results = service.generateBittingList(configs.toString());
+            assertNotNull(results);
+
+        } catch (ProgressionServiceException ex) {
+
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void testGenerateBittingList_TooLargeStartingDepth() {
+
+        configs.put("startingDepth", 2);
+        try {
+
+            // Throws: ProgressionServiceException
+            service.generateBittingList(configs.toString());
+
+            fail();
+
+        } catch (ProgressionServiceException ex) {
+
+            // Expected results...
+        }
+    }
+
+
+    @Test
+    public void testGenerateBittingList_WrongTypeProgressionStep() {
+
+        configs.put("doubleStepProgression", "2");
+        try {
+
+            // Throws: ProgressionServiceException
+            service.generateBittingList(configs.toString());
+
+            fail();
+
+        } catch (ProgressionServiceException ex) {
+
+            // Expected results...
+        }
+    }
+
+    @Test
+    public void testGenerateBittingList_DoubleProgressionStep_OddDepthCount() {
+
+        configs.put("depthCount", 5);
+        try {
+
+            // Throws: ProgressionServiceException
+            service.generateBittingList(configs.toString());
+
+            fail();
+
+        } catch (ProgressionServiceException ex) {
+
+            // Expected results...
+        }
+    }
+
+    @Test
+    public void testGenerateBittingList_DoubleProgressionStep_TooSmallDepthCount() {
+
+        configs.put("depthCount", 2);
+        try {
+
+            // Throws: ProgressionServiceException
+            service.generateBittingList(configs.toString());
+
+            fail();
+
+        } catch (ProgressionServiceException ex) {
+
+            // Expected results...
+        }
+    }
+
+    @Test
+    public void testGenerateBittingList_DoubleProgressionStep_MinDepthCount() {
+
+        configs.put("depthCount", 4);
+        try {
+
+            ProgressionServiceResults results = service.generateBittingList(configs.toString());
+            assertNotNull(results);
+
+        } catch (ProgressionServiceException ex) {
+
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void testGenerateBittingList_WrongTypeMACS() {
+
+        configs.put("macs", "2");
+        try {
+
+            // Throws: ProgressionServiceException
+            service.generateBittingList(configs.toString());
+
+            fail();
+
+        } catch (ProgressionServiceException ex) {
+
+            // Expected results...
+        }
+    }
+
+    @Test
+    public void testGenerateBittingList_TooSmallMACS() {
+
+        configs.put("macs", 0);
+        try {
+
+            // Throws: ProgressionServiceException
+            service.generateBittingList(configs.toString());
+
+            fail();
+
+        } catch (ProgressionServiceException ex) {
+
+            // Expected results...
+        }
+    }
+
+    @Test
+    public void testGenerateBittingList_MinMACS() {
+
+        configs.put("macs", 1);
+        try {
+
+            ProgressionServiceResults results = service.generateBittingList(configs.toString());
+            assertNotNull(results);
+
+        } catch (ProgressionServiceException ex) {
+
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void testGenerateBittingList_MaxMACS() {
+
+        configs.put("macs", 10);
+        try {
+
+            ProgressionServiceResults results = service.generateBittingList(configs.toString());
+            assertNotNull(results);
+
+        } catch (ProgressionServiceException ex) {
+
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void testGenerateBittingList_TooLargeMACS() {
+
+        configs.put("macs", 11);
+        try {
+
+            // Throws: ProgressionServiceException
+            service.generateBittingList(configs.toString());
+
+            fail();
+
+        } catch (ProgressionServiceException ex) {
+
+            // Expected results...
+        }
+    }
+
+    // TODO: Need more .generateBittingList() tests.
+    // TODO: exceptions, json parser testing results for source, criteria, bitting list.
+
 }
