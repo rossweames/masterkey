@@ -134,7 +134,7 @@ public class RandomGenericTotalPositionProgressionServiceTest {
      */
 
     @Test
-    public void testGenerateBittingList_Invalid() {
+    public void testGenerateBittingList_Null() {
 
         try {
 
@@ -155,6 +155,10 @@ public class RandomGenericTotalPositionProgressionServiceTest {
 
             ProgressionServiceResults results = service.generateBittingList(configs.toString());
             assertNotNull(results);
+            assertNotNull(results.getSource());
+            assertEquals("Random Generic Total Position Progression Service", results.getSource());
+            assertNotNull(results.getCriteria());
+            assertNotNull(results.getBittingList());
 
         } catch (ProgressionServiceException ex) {
 
@@ -554,8 +558,4 @@ public class RandomGenericTotalPositionProgressionServiceTest {
             // Expected results...
         }
     }
-
-    // TODO: Need more .generateBittingList() tests.
-    // TODO: exceptions, json parser testing results for source, criteria, bitting list.
-
 }
