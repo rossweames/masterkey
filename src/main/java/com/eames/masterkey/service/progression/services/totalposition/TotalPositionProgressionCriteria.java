@@ -182,9 +182,13 @@ public class TotalPositionProgressionCriteria implements ProgressionCriteria {
              */
             if (macs <= 0) {
 
-                final String MACS_TOO_SMALL= "The MACS must be greater than 0.";
-                logger.error(MACS_TOO_SMALL + " (" + macs + ")");
-                throw new ValidationException(MACS_TOO_SMALL);
+                StringBuilder sb = new StringBuilder();
+                sb.append("The MACS must be greater than 0 (");
+                sb.append(macs);
+                sb.append(").");
+                String errorMessage = sb.toString();
+                logger.error(errorMessage);
+                throw new ValidationException(errorMessage);
             }
 
             /*
@@ -203,20 +207,28 @@ public class TotalPositionProgressionCriteria implements ProgressionCriteria {
             for (int[] row : progressionSteps) {
                 if (row.length != masterCuts.length) {
 
-                    final String PROG_STEP_CUTS_DONT_MATCH_MASTER_CUTS = "The progression steps do not have the same " +
-                            "number of cuts as the master key.";
-                    logger.error(PROG_STEP_CUTS_DONT_MATCH_MASTER_CUTS + " (" + row.length + ", " +
-                            masterCuts.length + ")");
-                    throw new ValidationException(PROG_STEP_CUTS_DONT_MATCH_MASTER_CUTS);
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("The progression steps do not have the same number of cuts as the master key (");
+                    sb.append(row.length);
+                    sb.append(", ");
+                    sb.append(masterCuts.length);
+                    sb.append(").");
+                    String errorMessage = sb.toString();
+                    logger.error(errorMessage);
+                    throw new ValidationException(errorMessage);
                 }
             }
             if (progressionSequence.length != masterCuts.length) {
 
-                final String PROG_SEQ_CUTS_DONT_MATCH_MASTER_CUTS = "The progression sequence does not have the same " +
-                        "number of cuts as the master key.";
-                logger.error(PROG_SEQ_CUTS_DONT_MATCH_MASTER_CUTS + " (" + progressionSequence.length + ", " +
-                        masterCuts.length + ")");
-                throw new ValidationException(PROG_SEQ_CUTS_DONT_MATCH_MASTER_CUTS);
+                StringBuilder sb = new StringBuilder();
+                sb.append("The progression sequence does not have the same number of cuts as the master key (");
+                sb.append(progressionSequence.length);
+                sb.append(", ");
+                sb.append(masterCuts.length);
+                sb.append(").");
+                String errorMessage = sb.toString();
+                logger.error(errorMessage);
+                throw new ValidationException(errorMessage);
             }
 
             /*
@@ -225,13 +237,17 @@ public class TotalPositionProgressionCriteria implements ProgressionCriteria {
             for (int col = 0; col < masterCuts.length; col++) {
                 if (masterCuts[col] < 0) {
 
-                    final String MASTER_DEPTH_NEGATIVE = "The master key contains a negative depth.";
-                    logger.error(MASTER_DEPTH_NEGATIVE + " (cut=" + col + ", depth=" + masterCuts[col] + ")");
-                    throw new ValidationException(MASTER_DEPTH_NEGATIVE);
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("The master key contains a negative depth (cut=");
+                    sb.append(col);
+                    sb.append(", depth=");
+                    sb.append(masterCuts[col]);
+                    sb.append(").");
+                    String errorMessage = sb.toString();
+                    logger.error(errorMessage);
+                    throw new ValidationException(errorMessage);
                 }
             }
-
-            // TODO: Need to validate that there are no duplicates in a chamber for the progression steps.
 
             /*
              * Make sure that the progression steps do not contain any of the master key depths in the same column.
@@ -239,42 +255,42 @@ public class TotalPositionProgressionCriteria implements ProgressionCriteria {
             for (int col = 0; col < progressionSteps[0].length; col++) {
 
                 // Count the number of times the progression step depth matches the master key depth.
-                int masterMatchCount = 0;
-                boolean duplicateSteps = false;
                 for (int row = 0; row < progressionSteps.length; row++) {
 
                     // The progression step depth matches the master key depth, so bump the match count.
-                    if (progressionSteps[row][col] == masterCuts[col])
-                        masterMatchCount++;
+                    if (progressionSteps[row][col] == masterCuts[col]) {
+
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("The progression steps contain a master key depth (cut=");
+                        sb.append(col);
+                        sb.append(", step=");
+                        sb.append(row);
+                        sb.append(", depth=");
+                        sb.append(progressionSteps[row][col]);
+                        sb.append(").");
+                        String errorMessage = sb.toString();
+                        logger.error(errorMessage);
+                        throw new ValidationException(errorMessage);
+                    }
 
                     // Compare this row's depth to the previous rows' depths.
                     for (int r2 = 0; r2 < row; r2++) {
                         if (progressionSteps[r2][col] == progressionSteps[row][col]) {
-                            duplicateSteps = true;
-                            break;
+
+                            StringBuilder sb = new StringBuilder();
+                            sb.append("The progression steps contain duplicate depths (cut=");
+                            sb.append(col);
+                            sb.append(", step=");
+                            sb.append(row);
+                            sb.append(", depth=");
+                            sb.append(progressionSteps[row][col]);
+                            sb.append(").");
+                            String errorMessage = sb.toString();
+                            logger.error(errorMessage);
+                            throw new ValidationException(errorMessage);
                         }
                     }
                 }
-
-                // The progression steps contain a master key depth in the same column
-                // but not all depths match the master key depth.
-                if ((masterMatchCount > 0) && (masterMatchCount != progressionSteps.length)) {
-
-                    final String PROG_STEPS_CONTAIN_MASTER_DEPTH = "The progression steps contain a master key " +
-                            "depth.";
-                    logger.error(PROG_STEPS_CONTAIN_MASTER_DEPTH + " (cut=" + col + ", depth=" + masterCuts[col] +
-                            ")");
-                    throw new ValidationException(PROG_STEPS_CONTAIN_MASTER_DEPTH);
-                }
-
-                // The progression steps contain duplicate depths in the same column but no master key depths.
-                else if (duplicateSteps && (masterMatchCount == 0)){
-
-                    final String PROG_STEPS_CONTAIN_DUPLICATES = "The progression steps contain duplicate depths.";
-                    logger.error(PROG_STEPS_CONTAIN_DUPLICATES + " (cut=" + col + ", depth=" + masterCuts[col] +
-                            ")");
-                    throw new ValidationException(PROG_STEPS_CONTAIN_DUPLICATES);
-               }
             }
 
             /*
@@ -285,10 +301,15 @@ public class TotalPositionProgressionCriteria implements ProgressionCriteria {
                 // The position is invalid.
                 if ((progressionSequence[col] < 1) || (progressionSequence[col] > progressionSequence.length)) {
 
-                    final String PROG_SEQ_POSITION_INVALID = "The progression sequence contains an invalid position.";
-                    logger.error(PROG_SEQ_POSITION_INVALID + " (cut=" + col + ", position=" + progressionSequence[col] +
-                            ")");
-                    throw new ValidationException(PROG_SEQ_POSITION_INVALID);
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("The progression sequence contains an invalid position (cut=");
+                    sb.append(col);
+                    sb.append(", position=");
+                    sb.append(progressionSequence[col]);
+                    sb.append(").");
+                    String errorMessage = sb.toString();
+                    logger.error(errorMessage);
+                    throw new ValidationException(errorMessage);
                 }
 
                 // The position is valid.
@@ -298,11 +319,15 @@ public class TotalPositionProgressionCriteria implements ProgressionCriteria {
                     for (int c2 = 0; c2 < col; c2++) {
                         if (progressionSequence[col] == progressionSequence[c2]) {
 
-                            final String PROG_SEQ_POSITION_DUPLICATED = "The progression sequence position is " +
-                                    "duplicated.";
-                            logger.error(PROG_SEQ_POSITION_DUPLICATED + " (cut=" + col + ", position=" +
-                                    progressionSequence[col] + ")");
-                            throw new ValidationException(PROG_SEQ_POSITION_DUPLICATED);
+                            StringBuilder sb = new StringBuilder();
+                            sb.append("The progression sequence position is duplicated (cut=");
+                            sb.append(col);
+                            sb.append(", position=");
+                            sb.append(progressionSequence[col]);
+                            sb.append(").");
+                            String errorMessage = sb.toString();
+                            logger.error(errorMessage);
+                            throw new ValidationException(errorMessage);
                         }
                     }
                 }
