@@ -264,11 +264,11 @@ public class TotalPositionProgressionCriteriaTest {
                     .setProgressionSequence(new int[] {1})
                     .build();
 
-            assertNotNull(criteria);
+            fail();
 
         } catch (ValidationException e) {
 
-            fail(e.getMessage());
+            // Expected results
         }
     }
 
@@ -285,11 +285,11 @@ public class TotalPositionProgressionCriteriaTest {
                     .setProgressionSequence(new int[] {1, 2})
                     .build();
 
-            assertNotNull(criteria);
+            fail();
 
         } catch (ValidationException e) {
 
-            fail(e.getMessage());
+            // Expected results
         }
     }
 
