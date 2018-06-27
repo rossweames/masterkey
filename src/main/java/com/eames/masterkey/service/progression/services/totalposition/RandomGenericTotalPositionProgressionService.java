@@ -580,7 +580,6 @@ public class RandomGenericTotalPositionProgressionService
         int macs = (Integer) jsonConfigs.get(MACS_KEY);
         logger.debug("Generating progression criteria with a MACS of '{}'.", macs);
 
-        // TODO 17: Need to seed the random number generator.
         // Create a random number generator.
         Random random = new Random();
 
