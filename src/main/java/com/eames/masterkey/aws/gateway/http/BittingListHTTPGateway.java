@@ -162,12 +162,7 @@ public class BittingListHTTPGateway
 
                     logger.debug("Added '{}' to the progression service provider.", clazz.getName());
 
-                } catch (InstantiationException e) {
-
-                    logger.error("Unable to instantiate a progression service {}. Cause: {}", clazz.getName(),
-                            e.getMessage());
-
-                } catch (IllegalAccessException e) {
+                } catch (InstantiationException | IllegalAccessException e) {
 
                     logger.error("Unable to instantiate a progression service {}. Cause: {}", clazz.getName(),
                             e.getMessage());
