@@ -22,10 +22,6 @@ import java.util.Set;
  * This class is the gateway that receives a set of JSON configurations through an HTTP request. It then finds a
  * {@link ProgressionService} that can interpret those configurations and generate a JSON bitting list, which this
  * gateway then passes back to the caller within an HTTP response.
- *
- * TODO: GET /bittingList calls this class (different operation) and returns instructions (and active URLs) for all other REST services.
- * TODO: GET /bittingList/catalog calls this class (different operation) and returns a list of progression services and their required JSON config structures and value ranges.
- * TODO: ProgressionService needs 'system' and description' attributes.
  */
 public class BittingListHTTPGateway
         implements RequestStreamHandler {
