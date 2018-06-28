@@ -12,6 +12,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
+import org.reflections.Reflections;
 
 import java.io.*;
 import java.util.HashSet;
@@ -21,6 +22,10 @@ import java.util.Set;
  * This class is the gateway that receives a set of JSON configurations through an HTTP request. It then finds a
  * {@link ProgressionService} that can interpret those configurations and generate a JSON bitting list, which this
  * gateway then passes back to the caller within an HTTP response.
+ *
+ * TODO: GET /bittingList calls this class (different operation) and returns instructions (and active URLs) for all other REST services.
+ * TODO: GET /bittingList/catalog calls this class (different operation) and returns a list of progression services and their required JSON config structures and value ranges.
+ * TODO: ProgressionService needs 'system' and description' attributes.
  */
 public class BittingListHTTPGateway
         implements RequestStreamHandler {
@@ -39,10 +44,8 @@ public class BittingListHTTPGateway
      */
     public BittingListHTTPGateway() {
 
-        // TODO 16: Need to generate the list of services.
-
-        Set<ProgressionService> services = new HashSet<>();
-        services.add(new RandomGenericTotalPositionProgressionService());
+        // Discover the progression services.
+        Set<ProgressionService> services = discoverProgressionServices();
 
         // Instantiate the progression service provider passing it the list of services.
         serviceProvider = new ProgressionServiceProvider(services);
@@ -135,5 +138,48 @@ public class BittingListHTTPGateway
             sb.append(ex.getMessage());
             throw new IOException(sb.toString());
         }
+    }
+
+    /**
+     * Discovers and returns all auto-registering {@link ProgressionService}s defined in the system.
+     * Finds all services that have an {@link @AutoRegister} annotation.
+     *
+     * @return the {@link Set} of {@link ProgressionService}s
+     */
+    private Set<ProgressionService> discoverProgressionServices() {
+
+        // Instantiate a Reflections object for scanning the services package.
+        Reflections reflections = new Reflections("com.eames.masterkey.service.progression.services");
+
+        // Add all auto-registered progression services to the service set.
+        Set<ProgressionService> services = new HashSet<>();
+        for (Class<?> clazz : reflections.getTypesAnnotatedWith(AutoRegister.class)) {
+
+            // Keep only the ProgressionService classes.
+            if (clazz.getSuperclass() == ProgressionService.class) {
+
+                try {
+
+                    // Instantiate the class and add it to the service set.
+                    // Throws: InstantiationException, InstantiationException
+                    services.add((ProgressionService) clazz.newInstance());
+
+                    logger.debug("Added '{}' to the progression service provider.", clazz.getName());
+
+                } catch (InstantiationException e) {
+
+                    logger.error("Unable to instantiate a progression service {}. Cause: {}", clazz.getName(),
+                            e.getMessage());
+
+                } catch (IllegalAccessException e) {
+
+                    logger.error("Unable to instantiate a progression service {}. Cause: {}", clazz.getName(),
+                            e.getMessage());
+                }
+            }
+        }
+
+        // Return the set of services discovered.
+        return services;
     }
 }

@@ -3,11 +3,10 @@ package com.eames.masterkey.service.progression.services.totalposition;
 import com.eames.masterkey.model.BittingList;
 import com.eames.masterkey.service.ProcessingCapability;
 import com.eames.masterkey.service.ValidationException;
-import com.eames.masterkey.service.progression.ProgressionCriteria;
+import com.eames.masterkey.service.progression.AutoRegister;
 import com.eames.masterkey.service.progression.ProgressionService;
 import com.eames.masterkey.service.progression.ProgressionServiceException;
 import com.eames.masterkey.service.progression.ProgressionServiceResults;
-import com.google.gson.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
@@ -31,7 +30,11 @@ import java.util.Random;
  *     doubleStepProgression : [false, true] // Single or double step depth progression
  *     macs : [1-10] // The Maximum Adjacent Cut Specification
  * }
+ *
+ * This Progression service is automatically registered by the
+ * {@link com.eames.masterkey.aws.gateway.http.BittingListHTTPGateway} at startup.
  */
+@AutoRegister
 public class RandomGenericTotalPositionProgressionService
         implements ProgressionService {
 
