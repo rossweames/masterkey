@@ -15,6 +15,7 @@ import org.json.JSONObject;
 import org.reflections.Reflections;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -144,6 +145,8 @@ public class BittingListHTTPGateway
      */
     private Set<ProgressionService> discoverProgressionServices() {
 
+        logger.info("Discovering progression services.");
+
         // Instantiate a Reflections object for scanning the services package.
         Reflections reflections = new Reflections("com.eames.masterkey.service.progression.services");
 
@@ -151,8 +154,12 @@ public class BittingListHTTPGateway
         Set<ProgressionService> services = new HashSet<>();
         for (Class<?> clazz : reflections.getTypesAnnotatedWith(AutoRegister.class)) {
 
+            logger.debug("Discovered an auto-register class ({}).", clazz.getName());
+            
             // Keep only the ProgressionService classes.
-            if (clazz.getSuperclass() == ProgressionService.class) {
+            if (ProgressionService.class.isAssignableFrom(clazz)) {
+
+                logger.debug("Discovered an auto-register progression service class ({}).", clazz.getName());
 
                 try {
 
