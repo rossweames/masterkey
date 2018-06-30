@@ -49,6 +49,15 @@ public class BittingListHTTPGateway
     }
 
     /**
+     * Gets the {@link ProgressionServiceProvider}.
+     *
+     * @return the service provider
+     */
+    public ProgressionServiceProvider getServiceProvider() {
+        return serviceProvider;
+    }
+
+    /**
      * Gets called by the AWS Gateway API whenever an HTTP request is made for the Bitting List resource.
      *
      * @param inputStream the request input stream
