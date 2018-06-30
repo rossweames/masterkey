@@ -2,8 +2,8 @@ package com.eames.masterkey.aws.gateway.http;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
+import com.eames.masterkey.service.AutoRegister;
 import com.eames.masterkey.service.progression.*;
-import com.eames.masterkey.service.progression.services.totalposition.RandomGenericTotalPositionProgressionService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonPrimitive;
@@ -11,11 +11,9 @@ import com.google.gson.JsonSerializer;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONObject;
 import org.reflections.Reflections;
 
 import java.io.*;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 

@@ -3,7 +3,7 @@ package com.eames.masterkey.service.progression.services.totalposition;
 import com.eames.masterkey.model.BittingList;
 import com.eames.masterkey.service.ProcessingCapability;
 import com.eames.masterkey.service.ValidationException;
-import com.eames.masterkey.service.progression.AutoRegister;
+import com.eames.masterkey.service.AutoRegister;
 import com.eames.masterkey.service.progression.ProgressionService;
 import com.eames.masterkey.service.progression.ProgressionServiceException;
 import com.eames.masterkey.service.progression.ProgressionServiceResults;
