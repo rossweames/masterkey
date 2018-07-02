@@ -94,8 +94,15 @@ public class BittingListHTTPGateway
             Gson gson = new GsonBuilder()
                     .registerTypeAdapter(int[].class, (JsonSerializer<int[]>) (src, type, jsonSerializationContext) -> {
                         StringBuilder sb = new StringBuilder();
-                        for (int v : src)
+                        for (int v : src) {
+
+                            // Depths of 10 are represented by 0s.
+                            if (v == 10)
+                                v = 0;
+
+                            // Append the depth.
                             sb.append(v);
+                        }
                         return new JsonPrimitive(sb.toString());
                     })
                     .create();
