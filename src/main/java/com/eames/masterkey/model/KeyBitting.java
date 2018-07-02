@@ -8,11 +8,14 @@ import static java.lang.Math.abs;
 public class KeyBitting
         implements BittingNode, HasKey {
 
+    // The 'MACS' violation status mask bit.
+    public static int STATUS_MASK_MACS = 0;
+
     // The key.
     private int[] key;
 
-    // Indicates that this key bitting has a MACS violation.
-    private Boolean hasMACSViolation;
+    // The key's status mask.
+    private int status = 0;
 
     /**
      * Constructor
@@ -24,7 +27,7 @@ public class KeyBitting
     }
 
     /*
-        Implemented BittingNode operations
+     * Implemented BittingNode operations
      */
 
     /**
@@ -43,7 +46,7 @@ public class KeyBitting
     }
 
     /*
-        Implemented BittingNode operations
+     * Implemented BittingNode operations
      */
 
     @Override
@@ -54,7 +57,7 @@ public class KeyBitting
     }
 
     /*
-        Implemented HasKey operations
+     * Implemented HasKey operations
      */
 
     @Override
@@ -68,40 +71,90 @@ public class KeyBitting
     }
 
     @Override
-    public Boolean testForMACSViolation(int macs) {
-
-        // Can't do the test without a key.
-        if (key == null)
-            return null;
-
-        // Initialize the 'hasMACSViolation' to false.
-        hasMACSViolation = false;
-
-        // Test the cuts until we find one that violates the MACS or we run out.
-        Integer lastCut = null;
-        for (int cut : key) {
-
-            // The MACS has been violated.
-            if ((lastCut != null) && (abs(cut - lastCut) > macs)) {
-                hasMACSViolation = true;
-                break;
-            }
-
-            // Save the cut to compare it to the next one.
-            lastCut = cut;
-        }
-
-        // Return the 'hasMACSViolation' flag.
-        return hasMACSViolation;
+    public int getStatus() {
+        return status;
     }
 
     @Override
-    public Boolean getHasMACSViolation() {
-        return hasMACSViolation;
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    @Override
+    public boolean testForMACSViolation(int macs) {
+
+        // Clear the status mask.
+        setHasMACSViolation(false);
+
+        // There must be a key.
+        if (key != null) {
+
+            // Test the cuts until we find one that violates the MACS or we run out.
+            Integer lastCut = null;
+            for (int cut : key) {
+
+                // The MACS has been violated.
+                if ((lastCut != null) && (abs(cut - lastCut) > macs)) {
+                    setHasMACSViolation(true);
+                    break;
+                }
+
+                // Save the cut to compare it to the next one.
+                lastCut = cut;
+            }
+        }
+
+        // Return the 'MACS violation' flag.
+        return getHasMACSViolation();
+    }
+
+    @Override
+    public boolean getHasMACSViolation() {
+
+        return testStatusBit(STATUS_MASK_MACS);
     }
 
     @Override
     public void setHasMACSViolation(boolean hasMACSViolation) {
-        this.hasMACSViolation = hasMACSViolation;
+
+        if (hasMACSViolation)
+            setStatusBit(STATUS_MASK_MACS);
+        else
+            clearStatusBit(STATUS_MASK_MACS);
+    }
+
+    /**
+     * Local status operations
+     */
+
+    /**
+     * Tests the given status bit.
+     *
+     * @param statusBit the status bit to test
+     * @return {@code True} if the given bit is set, {@code False} if not
+     */
+    private boolean testStatusBit(int statusBit) {
+
+        return ((status & (1 << statusBit)) != 0);
+    }
+
+    /**
+     * Clears the given status bit.
+     *
+     * @param statusBit the status bit to clear
+     */
+    private void clearStatusBit(int statusBit) {
+
+        status &= ~(1 << statusBit);
+    }
+
+    /**
+     * Sets the given status bit.
+     *
+     * @param statusBit the status bit to set
+     */
+    private void setStatusBit(int statusBit) {
+
+        status |= (1 << statusBit);
     }
 }
