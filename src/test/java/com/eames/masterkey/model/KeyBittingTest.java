@@ -39,7 +39,7 @@ public class KeyBittingTest {
     @Test
     public void testHasMACSViolation_Default() {
 
-        assertNull(keyBitting.getHasMACSViolation());
+        assertFalse(keyBitting.getHasMACSViolation());
     }
 
     @Test
@@ -67,6 +67,74 @@ public class KeyBittingTest {
     }
 
     /*
+     * .setHasMACSViolation() tests
+     */
+
+    @Test
+    public void testSetHasMACSViolation_0_False() {
+
+        keyBitting.setStatus(0);
+        keyBitting.setHasMACSViolation(false);
+        assertFalse(keyBitting.getHasMACSViolation());
+    }
+
+    @Test
+    public void testSetHasMACSViolation_0_True() {
+
+        keyBitting.setStatus(0);
+        keyBitting.setHasMACSViolation(true);
+        assertTrue(keyBitting.getHasMACSViolation());
+    }
+
+    @Test
+    public void testSetHasMACSViolation_1_False() {
+
+        keyBitting.setStatus(1);
+        keyBitting.setHasMACSViolation(false);
+        assertFalse(keyBitting.getHasMACSViolation());
+    }
+
+    @Test
+    public void testSetHasMACSViolation_1_True() {
+
+        keyBitting.setStatus(1);
+        keyBitting.setHasMACSViolation(true);
+        assertTrue(keyBitting.getHasMACSViolation());
+    }
+
+    @Test
+    public void testSetHasMACSViolation_2_False() {
+
+        keyBitting.setStatus(2);
+        keyBitting.setHasMACSViolation(false);
+        assertFalse(keyBitting.getHasMACSViolation());
+    }
+
+    @Test
+    public void testSetHasMACSViolation_2_True() {
+
+        keyBitting.setStatus(2);
+        keyBitting.setHasMACSViolation(true);
+        assertTrue(keyBitting.getHasMACSViolation());
+    }
+
+    @Test
+    public void testSetHasMACSViolation_3_False() {
+
+        keyBitting.setStatus(3);
+        keyBitting.setHasMACSViolation(false);
+        assertFalse(keyBitting.getHasMACSViolation());
+    }
+
+    @Test
+    public void testSetHasMACSViolation_3_True() {
+
+        keyBitting.setStatus(3);
+        keyBitting.setHasMACSViolation(true);
+        assertTrue(keyBitting.getHasMACSViolation());
+    }
+
+    /*
      * .testForMACSViolation() tests
      */
 
@@ -74,58 +142,38 @@ public class KeyBittingTest {
     public void testTestMACSViolation_NullKey() {
 
         keyBitting.setKey(null);
-        assertNull(keyBitting.testForMACSViolation(4));
-        assertNull(keyBitting.getHasMACSViolation());
+        assertFalse(keyBitting.testForMACSViolation(4));
+        assertFalse(keyBitting.getHasMACSViolation());
     }
 
     @Test
     public void testTestMACSViolation_False() {
 
-        Boolean result = keyBitting.testForMACSViolation(5);
-        assertNotNull(result);
-        assertFalse(result);
-
-        Boolean flag = keyBitting.getHasMACSViolation();
-        assertNotNull(flag);
-        assertFalse(flag);
+        assertFalse(keyBitting.testForMACSViolation(5));
+        assertFalse(keyBitting.getHasMACSViolation());
     }
 
     @Test
     public void testTestMACSViolation_True_Beginning() {
 
         keyBitting = new KeyBitting(new int[] {6, 1, 4, 1, 3});
-        Boolean result = keyBitting.testForMACSViolation(4);
-        assertNotNull(result);
-        assertTrue(result);
-
-        Boolean flag = keyBitting.getHasMACSViolation();
-        assertNotNull(flag);
-        assertTrue(flag);
+        assertTrue(keyBitting.testForMACSViolation(4));
+        assertTrue(keyBitting.getHasMACSViolation());
     }
 
     @Test
     public void testTestMACSViolation_True_Middle() {
 
         keyBitting = new KeyBitting(new int[] {2, 1, 6, 4, 6});
-        Boolean result = keyBitting.testForMACSViolation(4);
-        assertNotNull(result);
-        assertTrue(result);
-
-        Boolean flag = keyBitting.getHasMACSViolation();
-        assertNotNull(flag);
-        assertTrue(flag);
+        assertTrue(keyBitting.testForMACSViolation(4));
+        assertTrue(keyBitting.getHasMACSViolation());
     }
 
     @Test
     public void testTestMACSViolation_True_End() {
 
         keyBitting = new KeyBitting(new int[] {3, 5, 4, 1, 6});
-        Boolean result = keyBitting.testForMACSViolation(4);
-        assertNotNull(result);
-        assertTrue(result);
-
-        Boolean flag = keyBitting.getHasMACSViolation();
-        assertNotNull(flag);
-        assertTrue(flag);
+        assertTrue(keyBitting.testForMACSViolation(4));
+        assertTrue(keyBitting.getHasMACSViolation());
     }
 }

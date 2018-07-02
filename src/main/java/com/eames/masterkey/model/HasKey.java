@@ -20,22 +20,34 @@ public interface HasKey {
     void setKey(int[] key);
 
     /**
+     * Gets the key status.
+     *
+     * @return the status
+     */
+    int getStatus();
+
+    /**
+     * Sets the key status.
+     *
+     * @param status the new key status
+     */
+    void setStatus(int status);
+
+    /**
      * Tests for a MACS violation.
      * Sets the hasMACSViolation state appropriately.
      *
      * @param macs the MACS to test against
-     * @return {@code True} if the key violates the given MACS, {@code false} if not,
-     * {@code null} if the key or 'hasMACSValidation' flag are not set
+     * @return {@code True} if the key violates the given MACS, {@code false} if not.
      */
-    Boolean testForMACSViolation(int macs);
+    boolean testForMACSViolation(int macs);
 
     /**
      * Gets the MACS violation flag.
      *
-     * @return {@code True} if the key has a MACS violation, {@code false} if not,
-     * {@code null} if the MACS violation state has never been set
+     * @return {@code True} if the key has a MACS violation, {@code false} if not.
      */
-    Boolean getHasMACSViolation();
+    boolean getHasMACSViolation();
 
     /**
      * Sets the MACS violation flag.
