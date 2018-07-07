@@ -1,10 +1,10 @@
 package com.eames.masterkey.model;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * This class tests the {@link BittingGroup} class.
@@ -17,7 +17,7 @@ public class BittingGroupTest {
     /**
      * Gets called before each test.
      */
-    @Before
+    @BeforeEach
     public void setUp() {
 
         bittingGroup =new BittingGroup();
@@ -26,7 +26,7 @@ public class BittingGroupTest {
     /**
      * Gets called after each test.
      */
-    @After
+    @AfterEach
     public void tearDown() {
 
         bittingGroup = null;

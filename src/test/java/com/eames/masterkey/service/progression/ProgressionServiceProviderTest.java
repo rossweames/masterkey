@@ -3,16 +3,16 @@ package com.eames.masterkey.service.progression;
 import com.eames.masterkey.service.ProcessingCapability;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * This class tests the {@link ProgressionServiceProvider} class.
@@ -60,7 +60,7 @@ public class ProgressionServiceProviderTest {
     /**
      * Gets called before each test.
      */
-    @Before
+    @BeforeEach
     public void setUp() {
 
         services = new HashSet<>();
@@ -69,7 +69,7 @@ public class ProgressionServiceProviderTest {
     /**
      * Gets called after each test.
      */
-    @After
+    @AfterEach
     public void tearDown() {
 
         services = null;

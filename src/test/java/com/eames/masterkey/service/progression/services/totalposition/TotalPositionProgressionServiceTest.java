@@ -5,18 +5,18 @@ import com.eames.masterkey.model.BittingList;
 import com.eames.masterkey.model.BittingNode;
 import com.eames.masterkey.model.KeyBitting;
 import com.eames.masterkey.service.progression.ProgressionServiceException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TotalPositionProgressionServiceTest {
 
     /**
      * Gets called before each test.
      */
-    @Before
+    @BeforeEach
     public void setUp() {
 
     }
@@ -24,7 +24,7 @@ public class TotalPositionProgressionServiceTest {
     /**
      * Gets called after each test.
      */
-    @After
+    @AfterEach
     public void tearDown() {
 
     }

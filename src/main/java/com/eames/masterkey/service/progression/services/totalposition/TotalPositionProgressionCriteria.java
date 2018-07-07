@@ -14,6 +14,26 @@ public class TotalPositionProgressionCriteria implements ProgressionCriteria {
     // Initialize the Log4j logger.
     private static final Logger logger = LogManager.getLogger(TotalPositionProgressionCriteria.class);
 
+    /*
+     * Validation constants
+     */
+
+    // The cut count validation range.
+    public static final int CUT_COUNT_MIN = 3;
+    public static final int CUT_COUNT_MAX = 7;
+
+    // The starting depth validation range.
+    public static final int STARTING_DEPTH_MIN = 0;
+    public static final int STARTING_DEPTH_MAX = 1;
+
+    // The MACS validation range.
+    public static final int MACS_MIN = 1;
+    public static final int MACS_MAX = 10;
+
+    /*
+     * Criteria attributes
+     */
+
     // The Maximum Adjacent Cut Specification (MACS)
     private final int macs;
 
@@ -178,27 +198,41 @@ public class TotalPositionProgressionCriteria implements ProgressionCriteria {
             }
 
             /*
-             * The MACS must be greater than zero.
+             * The MACS must be within range.
              */
-            if (macs <= 0) {
+            if (!validateMACS(macs)) {
 
                 StringBuilder sb = new StringBuilder();
-                sb.append("The MACS must be greater than 0 (");
+                sb.append("The MACS is out of range (");
                 sb.append(macs);
-                sb.append(").");
+                sb.append(") [");
+                sb.append(TotalPositionProgressionCriteria.MACS_MIN);
+                sb.append(", ");
+                sb.append(TotalPositionProgressionCriteria.MACS_MAX);
+                sb.append("].");
                 String errorMessage = sb.toString();
                 logger.error(errorMessage);
+
                 throw new ValidationException(errorMessage);
             }
 
             /*
-             * The master key must have at least one column.
+             * The master key cuts must be within range.
              */
-            if (masterCuts.length < 1) {
+            if (!validateCutCount(masterCuts.length)) {
 
-                final String MASTER_EMPTY = "The master key must have at least one cut.";
-                logger.error(MASTER_EMPTY);
-                throw new ValidationException(MASTER_EMPTY);
+                StringBuilder sb = new StringBuilder();
+                sb.append("The master key has an invalid number of cuts (");
+                sb.append(masterCuts.length);
+                sb.append(") [");
+                sb.append(TotalPositionProgressionCriteria.CUT_COUNT_MIN);
+                sb.append(", ");
+                sb.append(TotalPositionProgressionCriteria.CUT_COUNT_MAX);
+                sb.append("].");
+                String errorMessage = sb.toString();
+                logger.error(errorMessage);
+
+                throw new ValidationException(errorMessage);
             }
 
             /*
@@ -352,5 +386,42 @@ public class TotalPositionProgressionCriteria implements ProgressionCriteria {
             // Construct and return the configs.
             return new TotalPositionProgressionCriteria(macs, masterCuts, progressionSteps, progressionSequence);
         }
+    }
+
+    /*
+     * Class operations
+     */
+
+    /**
+     * Validates the given cut count.
+     *
+     * @param cutCount the cut count to validate
+     * @return {@code True} if the cut count is valid, {@code false} if not.
+     */
+    public static boolean validateCutCount(int cutCount) {
+
+       return ((cutCount >= CUT_COUNT_MIN) && (cutCount <= CUT_COUNT_MAX));
+    }
+
+    /**
+     * Validates the given starting depth.
+     *
+     * @param startingDepth the starting depth to validate
+     * @return {@code True} if the starting depth is valid, {@code false} if not.
+     */
+    public static boolean validateStartingDepth(int startingDepth) {
+
+        return ((startingDepth >= STARTING_DEPTH_MIN) && (startingDepth <= STARTING_DEPTH_MAX));
+    }
+
+    /**
+     * Validates the given MACS.
+     *
+     * @param macs the MACS to validate
+     * @return {@code True} if the MACS is valid, {@code false} if not.
+     */
+    public static boolean validateMACS(int macs) {
+
+        return ((macs >= MACS_MIN) && (macs <= MACS_MAX));
     }
 }

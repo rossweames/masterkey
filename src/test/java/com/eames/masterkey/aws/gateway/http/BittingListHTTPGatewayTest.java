@@ -1,16 +1,18 @@
 package com.eames.masterkey.aws.gateway.http;
 
+import com.eames.masterkey.service.Service;
 import com.eames.masterkey.service.progression.ProgressionService;
 import com.eames.masterkey.service.progression.ProgressionServiceProvider;
+import com.eames.masterkey.service.progression.services.totalposition.GenericTotalPositionProgressionService;
 import com.eames.masterkey.service.progression.services.totalposition.RandomGenericTotalPositionProgressionService;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * This class tests the {@link BittingListHTTPGateway} class.
@@ -23,7 +25,7 @@ public class BittingListHTTPGatewayTest {
     /**
      * Gets called before each test.
      */
-    @Before
+    @BeforeEach
     public void setUp() {
 
         // Instantiate the gateway.
@@ -33,7 +35,7 @@ public class BittingListHTTPGatewayTest {
     /**
      * Gets called after each test.
      */
-    @After
+    @AfterEach
     public void tearDown() {
 
         // Clear the gateway.
@@ -47,12 +49,22 @@ public class BittingListHTTPGatewayTest {
     @Test
     public void testConstructor() {
 
+        // Expect the following classes.
+        Class[] expectedServiceClasses = new Class[] {
+                RandomGenericTotalPositionProgressionService.class,
+                GenericTotalPositionProgressionService.class};
+
         ProgressionServiceProvider serviceProvider = gateway.getServiceProvider();
         assertNotNull(serviceProvider);
 
         Collection<ProgressionService> services = serviceProvider.getRegisteredServices();
         assertNotNull(services);
-        assertEquals(1, services.size());
-        assertEquals(RandomGenericTotalPositionProgressionService.class, services.iterator().next().getClass());
+
+        // Test the found service's classes against the expected service classes.
+        Class[] foundServiceClasses = new Class[services.size()];
+        int i = 0;
+        for (Service service : services)
+            foundServiceClasses[i++] = service.getClass();
+        assertArrayEquals(expectedServiceClasses, foundServiceClasses);
     }
 }

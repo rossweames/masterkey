@@ -1,14 +1,14 @@
 package com.eames.masterkey.service.progression.services.totalposition;
 
 import com.eames.masterkey.service.ValidationException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * This class tests the {@link TotalPositionProgressionCriteria} class.
@@ -37,8 +37,8 @@ public class TotalPositionProgressionCriteriaTest {
     /**
      * Gets called before each test.
      */
-    @Before
-    public void setUp() {
+    @BeforeEach
+    private void setUp() {
 
         // Construct the builder and fill it with valid values.
         configBuilder = new TotalPositionProgressionCriteria.Builder()
@@ -51,8 +51,8 @@ public class TotalPositionProgressionCriteriaTest {
     /**
      * Gets called after each test.
      */
-    @After
-    public void tearDown() {
+    @AfterEach
+    private void tearDown() {
 
         // Clear the builder.
         configBuilder = null;
@@ -63,7 +63,7 @@ public class TotalPositionProgressionCriteriaTest {
      */
 
     @Test
-    public void testBuild_Valid() {
+    private void testBuild_Valid() {
 
         try {
 
@@ -82,7 +82,7 @@ public class TotalPositionProgressionCriteriaTest {
      */
 
     @Test
-    public void testBuild_NegativeMACS() {
+    private void testBuild_NegativeMACS() {
 
         try {
 
@@ -101,7 +101,7 @@ public class TotalPositionProgressionCriteriaTest {
     }
 
     @Test
-    public void testBuild_ZeroMACS() {
+    private void testBuild_ZeroMACS() {
 
         try {
 
@@ -139,14 +139,14 @@ public class TotalPositionProgressionCriteriaTest {
     }
 
     @Test
-    public void testBuild_0MasterCut() {
+    public void testBuild_2MasterCut() {
 
         try {
 
             configBuilder
-                    .setMasterCuts(new int[] {})
-                    .setProgressionSteps(new int[][] {{}})
-                    .setProgressionSequence(new int[] {})
+                    .setMasterCuts(new int[] {1, 2})
+                    .setProgressionSteps(new int[][] {{2, 3}})
+                    .setProgressionSequence(new int[] {1, 2})
                     .build();
 
             fail();
@@ -158,14 +158,14 @@ public class TotalPositionProgressionCriteriaTest {
     }
 
     @Test
-    public void testBuild_1MasterCut() {
+    public void testBuild_3MasterCut() {
 
         try {
 
             TotalPositionProgressionCriteria criteria = configBuilder
-                    .setMasterCuts(new int[] {4})
-                    .setProgressionSteps(new int[][] {{6}})
-                    .setProgressionSequence(new int[] {1})
+                    .setMasterCuts(new int[] {1, 2, 3})
+                    .setProgressionSteps(new int[][] {{2, 3, 4}})
+                    .setProgressionSequence(new int[] {1, 2, 3})
                     .build();
 
             assertNotNull(criteria);
@@ -173,6 +173,44 @@ public class TotalPositionProgressionCriteriaTest {
         } catch (ValidationException e) {
 
             fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void testBuild_7MasterCut() {
+
+        try {
+
+            TotalPositionProgressionCriteria criteria = configBuilder
+                    .setMasterCuts(new int[] {1, 2, 3, 4, 5, 6, 7})
+                    .setProgressionSteps(new int[][] {{2, 3, 4, 5, 6, 7, 8}})
+                    .setProgressionSequence(new int[] {1, 2, 3, 4, 5, 6, 7})
+                    .build();
+
+            assertNotNull(criteria);
+
+        } catch (ValidationException e) {
+
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void testBuild_8MasterCut() {
+
+        try {
+
+            configBuilder
+                    .setMasterCuts(new int[] {1, 2, 3, 4, 5, 6, 7, 8})
+                    .setProgressionSteps(new int[][] {{2, 3, 4, 5, 6, 7, 8, 9}})
+                    .setProgressionSequence(new int[] {1, 2, 3, 4, 5, 6, 7, 8})
+                    .build();
+
+            fail();
+
+        } catch (ValidationException e) {
+
+            // Expected results
         }
     }
 
@@ -448,4 +486,11 @@ public class TotalPositionProgressionCriteriaTest {
             // Expected results
         }
     }
+
+    // TODO: Need tests for .validateCutCount().
+
+    // TODO: Need tests for .validateStartingDepth().
+
+    // TODO: Need tests for .validateMACS().
+
 }
