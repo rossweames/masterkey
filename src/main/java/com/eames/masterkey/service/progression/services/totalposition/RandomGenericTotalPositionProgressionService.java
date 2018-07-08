@@ -2,7 +2,6 @@ package com.eames.masterkey.service.progression.services.totalposition;
 
 import com.eames.masterkey.service.AutoRegister;
 import com.eames.masterkey.service.ValidationException;
-import com.eames.masterkey.service.progression.ProgressionServiceException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
@@ -70,10 +69,14 @@ public class RandomGenericTotalPositionProgressionService
      */
 
     @Override
-    protected void validateJSONConfigValues(JSONObject jsonConfigs)
-        throws ProgressionServiceException {
+    protected TotalPositionProgressionCriteria generateProgressionCriteria(JSONObject jsonConfigs)
+        throws ValidationException {
 
         // The 'configs' will never be null.
+
+        /*
+         * Validate the configs.
+         */
 
         try {
 
@@ -93,7 +96,7 @@ public class RandomGenericTotalPositionProgressionService
                 String errorMessage = sb.toString();
                 logger.error(errorMessage);
 
-                throw new ProgressionServiceException(errorMessage);
+                throw new ValidationException(errorMessage);
             }
             Integer cutCount = (Integer) cutCountObj;
             if (!TotalPositionProgressionCriteria.validateCutCount(cutCount)) {
@@ -111,8 +114,9 @@ public class RandomGenericTotalPositionProgressionService
                 String errorMessage = sb.toString();
                 logger.error(errorMessage);
 
-                throw new ProgressionServiceException(errorMessage);
+                throw new ValidationException(errorMessage);
             }
+            logger.debug("Generating progression criteria with {} cuts.", cutCount);
 
             /*
              * Validate that the 'depth count' attribute is valid.
@@ -130,7 +134,7 @@ public class RandomGenericTotalPositionProgressionService
                 String errorMessage = sb.toString();
                 logger.error(errorMessage);
 
-                throw new ProgressionServiceException(errorMessage);
+                throw new ValidationException(errorMessage);
             }
             Integer depthCount = (Integer) depthCountObj;
             if ((depthCount < DEPTH_COUNT_MIN) || (depthCount > DEPTH_COUNT_MAX)) {
@@ -148,8 +152,9 @@ public class RandomGenericTotalPositionProgressionService
                 String errorMessage = sb.toString();
                 logger.error(errorMessage);
 
-                throw new ProgressionServiceException(errorMessage);
+                throw new ValidationException(errorMessage);
             }
+            logger.debug("Generating progression criteria with {} depths.", depthCount);
 
             /*
              * Validate that the 'starting depth' attribute is valid.
@@ -167,7 +172,7 @@ public class RandomGenericTotalPositionProgressionService
                 String errorMessage = sb.toString();
                 logger.error(errorMessage);
 
-                throw new ProgressionServiceException(errorMessage);
+                throw new ValidationException(errorMessage);
             }
             Integer startingDepth = (Integer) startingDepthObj;
             if (!TotalPositionProgressionCriteria.validateStartingDepth(startingDepth)) {
@@ -185,8 +190,9 @@ public class RandomGenericTotalPositionProgressionService
                 String errorMessage = sb.toString();
                 logger.error(errorMessage);
 
-                throw new ProgressionServiceException(errorMessage);
+                throw new ValidationException(errorMessage);
             }
+            logger.debug("Generating progression criteria with a starting depth of '{}'.", startingDepth);
 
             /*
              * Validate that the 'double step progression' attribute is valid.
@@ -204,7 +210,7 @@ public class RandomGenericTotalPositionProgressionService
                 String errorMessage = sb.toString();
                 logger.error(errorMessage);
 
-                throw new ProgressionServiceException(errorMessage);
+                throw new ValidationException(errorMessage);
             }
             Boolean doubleStepProgression = (Boolean) doubleStepProgressionObj;
             if (doubleStepProgression && ((depthCount % 2 != 0) || (depthCount < DOUBLE_STEP_DEPTH_MIN))) {
@@ -220,8 +226,10 @@ public class RandomGenericTotalPositionProgressionService
                 String errorMessage = sb.toString();
                 logger.error(errorMessage);
 
-                throw new ProgressionServiceException(errorMessage);
+                throw new ValidationException(errorMessage);
             }
+            logger.debug("Generating progression criteria with a {} step progression.",
+                    doubleStepProgression ? "double" : "single");
 
             /*
              * Validate that the 'MACS' attribute is valid.
@@ -239,7 +247,7 @@ public class RandomGenericTotalPositionProgressionService
                 String errorMessage = sb.toString();
                 logger.error(errorMessage);
 
-                throw new ProgressionServiceException(errorMessage);
+                throw new ValidationException(errorMessage);
             }
             Integer macs = (Integer) macsObj;
             if (!TotalPositionProgressionCriteria.validateMACS(macs)) {
@@ -257,133 +265,93 @@ public class RandomGenericTotalPositionProgressionService
                 String errorMessage = sb.toString();
                 logger.error(errorMessage);
 
-                throw new ProgressionServiceException(errorMessage);
+                throw new ValidationException(errorMessage);
             }
+            logger.debug("Generating progression criteria with a MACS of '{}'.", macs);
 
-        } catch (JSONException ex) {
+            /*
+             * Generate the criteria.
+             */
 
-            StringBuilder sb = new StringBuilder();
-            sb.append("An unexpected error occurred.");
-            sb.append(" ");
-            sb.append(ex.getMessage());
-            String errorMessage = sb.toString();
-            logger.error(errorMessage);
+            // Create a random number generator.
+            Random random = new Random();
 
-            throw new ProgressionServiceException(errorMessage);
-        }
-    }
+            /*
+             * Generate the master cuts.
+             */
 
-    @Override
-    protected TotalPositionProgressionCriteria generateProgressionCriteria(JSONObject jsonConfigs)
-        throws ProgressionServiceException {
+            /*
+             * Generate the master cuts using random integers.
+             * All cuts must be in the range: [startingDepth, depthCount + startingDepth - 1]
+             * Adjacent cuts must honor the MACS.
+             */
+            int maxDepth = depthCount + startingDepth - 1;
+            int[] masterCuts = new int[cutCount];
+            masterCuts[0] = random.nextInt(depthCount) + startingDepth;
+            for (int cut = 1; cut < cutCount; cut++) {
 
-        // Get the MACS.
-        // Throws: JSONException
-        int macs = (Integer) jsonConfigs.get(MACS_KEY);
-        logger.debug("Generating progression criteria with a MACS of '{}'.", macs);
+                int lastVal = masterCuts[cut - 1];
+                int minVal = Integer.max(startingDepth, lastVal - macs);
+                int maxVal = Integer.min(lastVal + macs, maxDepth);
+                masterCuts[cut] = random.nextInt(maxVal - minVal + 1) + minVal;
+            }
+            logger.debug("Generated the master key: {}.", Arrays.toString(masterCuts));
 
-        // Create a random number generator.
-        Random random = new Random();
+            /*
+             * Generate the progression steps.
+             */
 
-        /*
-         * Get the configs.
-         */
+            /*
+             * Generate the progression steps.
+             * Progression steps never include the master cut.
+             * Single step progressions use every depth.
+             * Double step progressions use all odd or all even depths, matching the oddness/evenness of the master.
+             */
+            int stepCount = (doubleStepProgression ? (depthCount / 2) : depthCount) - 1;
+            int[][] progressionSteps = new int[stepCount][cutCount];
+            for (int cut = 0; cut < cutCount; cut++) {
 
-        // Get the cut count.
-        // Throws: JSONException
-        int cutCount = (Integer) jsonConfigs.get(CUT_COUNT_KEY);
-        logger.debug("Generating progression criteria with {} cuts.", cutCount);
+                // Get the master cut value and its oddness/evenness.
+                int masterCutValue = masterCuts[cut];
+                boolean masterIsEven = (masterCutValue % 2) == 0;
 
-        // Get the depth count.
-        // Throws: JSONException
-        int depthCount = (Integer) jsonConfigs.get(DEPTH_COUNT_KEY);
-        logger.debug("Generating progression criteria with {} depths.", depthCount);
+                // Generate and shuffle the column's progression steps.
+                int[] colSteps = new int[stepCount];
+                int step = 0;
+                for (int depth = 0; depth < depthCount; depth++) {
 
-        // Get the starting depth.
-        // Throws: JSONException
-        int startingDepth = (Integer) jsonConfigs.get(STARTING_DEPTH_KEY);
-        logger.debug("Generating progression criteria with a starting depth of '{}'.", startingDepth);
-
-        // Get the double step progression flag.
-        // Throws: JSONException
-        boolean doubleStepProgression = (boolean) jsonConfigs.get(DOUBLE_STEP_PROGRESSION_KEY);
-        logger.debug("Generating progression criteria with a {} step progression.",
-                doubleStepProgression ? "double" : "single");
-
-        /*
-         * Generate the master cuts.
-         */
-
-        /*
-         * Generate the master cuts using random integers.
-         * All cuts must be in the range: [startingDepth, depthCount + startingDepth - 1]
-         * Adjacent cuts must honor the MACS.
-         */
-        int maxDepth = depthCount + startingDepth - 1;
-        int[] masterCuts = new int[cutCount];
-        masterCuts[0] = random.nextInt(depthCount) + startingDepth;
-        for (int cut = 1; cut < cutCount; cut++) {
-
-            int lastVal = masterCuts[cut - 1];
-            int minVal = Integer.max(startingDepth, lastVal - macs);
-            int maxVal = Integer.min(lastVal + macs, maxDepth);
-            masterCuts[cut] = random.nextInt(maxVal - minVal + 1) + minVal;
-        }
-        logger.debug("Generated the master key: {}.", Arrays.toString(masterCuts));
-
-        /*
-         * Generate the progression steps.
-         */
-
-        /*
-         * Generate the progression steps.
-         * Progression steps never include the master cut.
-         * Single step progressions use every depth.
-         * Double step progressions use all odd or all even depths, matching the oddness/evenness of the master.
-         */
-        int stepCount = (doubleStepProgression ? (depthCount / 2) : depthCount) - 1;
-        int[][] progressionSteps = new int[stepCount][cutCount];
-        for (int cut = 0; cut < cutCount; cut++) {
-
-            // Get the master cut value and its oddness/evenness.
-            int masterCutValue = masterCuts[cut];
-            boolean masterIsEven = (masterCutValue % 2) == 0;
-
-            // Generate and shuffle the column's progression steps.
-            int[] colSteps = new int[stepCount];
-            int step = 0;
-            for (int depth = 0; depth < depthCount; depth++) {
-
-                // The depth cannot match the master cut and double step progression
-                // depths must match the master's oddness/evenness.
-                int depthVal = depth + startingDepth;
-                if (depthVal != masterCutValue) {
-                    if (!doubleStepProgression ||
-                        (doubleStepProgression && (((depthVal % 2) == 0) == masterIsEven)))
-                    colSteps[step++] = depthVal;
+                    // The depth cannot match the master cut and double step progression
+                    // depths must match the master's oddness/evenness.
+                    int depthVal = depth + startingDepth;
+                    if (depthVal != masterCutValue) {
+                        if (!doubleStepProgression ||
+                            (doubleStepProgression && (((depthVal % 2) == 0) == masterIsEven)))
+                        colSteps[step++] = depthVal;
+                    }
                 }
+                shuffle(colSteps, random);
+
+                // Move the column's progression steps to the progression steps.
+                for (step = 0; step < stepCount; step++)
+                    progressionSteps[step][cut] = colSteps[step];
             }
-            shuffle(colSteps, random);
+            for (int row = 0; row < stepCount; row++)
+                logger.debug("Generated the progression steps: {}.", Arrays.toString(progressionSteps[row]));
 
-            // Move the column's progression steps to the progression steps.
-            for (step = 0; step < stepCount; step++)
-                progressionSteps[step][cut] = colSteps[step];
-        }
-        for (int row = 0; row < stepCount; row++)
-            logger.debug("Generated the progression steps: {}.", Arrays.toString(progressionSteps[row]));
+            /*
+             * Generate the progression sequence.
+             */
 
-        /*
-         * Generate the progression sequence.
-         */
+            // Generate and shuffle the progression sequence.
+            int[] progressionSequence = new int[cutCount];
+            for (int cut = 0; cut < cutCount; cut++)
+                progressionSequence[cut] = cut + 1;
+            shuffle(progressionSequence, random);
+            logger.debug("Generated the progression sequence: {}.", Arrays.toString(progressionSequence));
 
-        // Generate and shuffle the progression sequence.
-        int[] progressionSequence = new int[cutCount];
-        for (int cut = 0; cut < cutCount; cut++)
-            progressionSequence[cut] = cut + 1;
-        shuffle(progressionSequence, random);
-        logger.debug("Generated the progression sequence: {}.", Arrays.toString(progressionSequence));
-
-        try {
+            /*
+             * Generate the progression criteria.
+             */
 
             // Build the progression criteria object from the randomly generated criteria.
             // Throws: ValidationException
@@ -397,10 +365,15 @@ public class RandomGenericTotalPositionProgressionService
             // Return the criteria.
             return criteria;
 
-        } catch (ValidationException ex) {
+        } catch (JSONException ex) {
 
-            logger.error("Failed to build the progression criteria. Cause: {}", ex.getMessage());
-            throw new ProgressionServiceException(ex.getMessage());
+            StringBuilder sb = new StringBuilder();
+            sb.append("An unexpected error occurred. Cause: ");
+            sb.append(ex.getMessage());
+            String errorMessage = sb.toString();
+            logger.error(errorMessage);
+
+            throw new ValidationException(errorMessage);
         }
     }
 

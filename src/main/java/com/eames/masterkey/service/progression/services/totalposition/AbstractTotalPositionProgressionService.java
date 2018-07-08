@@ -2,6 +2,7 @@ package com.eames.masterkey.service.progression.services.totalposition;
 
 import com.eames.masterkey.model.BittingList;
 import com.eames.masterkey.service.ProcessingCapability;
+import com.eames.masterkey.service.ValidationException;
 import com.eames.masterkey.service.progression.ProgressionService;
 import com.eames.masterkey.service.progression.ProgressionServiceException;
 import com.eames.masterkey.service.progression.ProgressionServiceResults;
@@ -69,37 +70,56 @@ public abstract class AbstractTotalPositionProgressionService
 
         logger.info("Generating a bitting list using the {} service.", getName());
 
-        // Convert the JSON string in to a JSONObject and validate.
-        // Pass a 'false' to indicate that we're in the 'generate' phase.
-        JSONObject jsonConfigs = getJSONConfigs(configs, false);
+        try {
 
-        // This service cannot process the given configs.
-        // Throws: JSONException
-        Object capabilityObj = jsonConfigs.get(CAPABILITY_KEY);
-        if (ProcessingCapability.NO.equals(capabilityObj)) {
+            // Convert the JSON string in to a JSONObject and validate.
+            // Pass a 'false' to indicate that we're in the 'generate' phase.
+            JSONObject jsonConfigs = getJSONConfigs(configs, false);
 
-            final String errorMessage = "Configurations not valid for this service.";
+            // This service cannot process the given configs.
+            // Throws: JSONException
+            Object capabilityObj = jsonConfigs.get(CAPABILITY_KEY);
+            if (ProcessingCapability.NO.equals(capabilityObj)) {
+
+                final String errorMessage = "Configurations not valid for this service.";
+                logger.error(errorMessage);
+                throw new ProgressionServiceException(errorMessage);
+            }
+
+            // Generate the progression criteria from the configs.
+            // Throws: ValidationException
+            TotalPositionProgressionCriteria criteria = generateProgressionCriteria(jsonConfigs);
+
+            // Construct a progression service.
+            TotalPositionProgressionService service = new TotalPositionProgressionService(criteria);
+
+            // Generate the bitting list.
+            // Throws: ProgressionServiceException
+            BittingList bittingList = service.generateBittingList();
+
+            // Construct and return the results.
+            return new ProgressionServiceResults(getName(), criteria, bittingList);
+
+        } catch (ValidationException ex) {
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("A validation error occurred. Cause: ");
+            sb.append(ex.getMessage());
+            String errorMessage = sb.toString();
             logger.error(errorMessage);
+
+            throw new ProgressionServiceException(errorMessage);
+
+        } catch (JSONException ex) {
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("An unexpected error occurred. Cause: ");
+            sb.append(ex.getMessage());
+            String errorMessage = sb.toString();
+            logger.error(errorMessage);
+
             throw new ProgressionServiceException(errorMessage);
         }
-
-        // Validate the JSON configs object's values.
-        // Throws ProgressionServiceException
-        validateJSONConfigValues(jsonConfigs);
-
-        // Generate the progression criteria from the configs.
-        // Throws: ProgressionServiceException
-        TotalPositionProgressionCriteria criteria = generateProgressionCriteria(jsonConfigs);
-
-        // Construct a progression service.
-        TotalPositionProgressionService service = new TotalPositionProgressionService(criteria);
-
-        // Generate the bitting list.
-        // Throws: ProgressionServiceException
-        BittingList bittingList = service.generateBittingList();
-
-        // Construct and return the results.
-        return new ProgressionServiceResults(getName(), criteria, bittingList);
     }
 
     @Override
@@ -113,24 +133,15 @@ public abstract class AbstractTotalPositionProgressionService
      */
 
     /**
-     * Validates the values of given JSON configs.
-     *
-     * @param jsonConfigs the JSON configs string to validate
-     * @throws ProgressionServiceException
-     */
-    protected abstract void validateJSONConfigValues(JSONObject jsonConfigs)
-            throws ProgressionServiceException;
-
-    /**
-     * Generates a set of Total Position Progression criteria from the given configs.
+     * Validates the given configs then generates a set of Total Position Progression criteria from them.
      * Assume the configs have been validated.
      *
      * @param jsonConfigs the configs to use
      * @return the newly generated progression criteria
-     * @throws ProgressionServiceException if any error occurs
+     * @throws ValidationException if any validation error occurs
      */
     protected abstract TotalPositionProgressionCriteria generateProgressionCriteria(JSONObject jsonConfigs)
-            throws ProgressionServiceException;
+            throws ValidationException;
 
     /*
      * Local operations
