@@ -271,9 +271,33 @@ public class GenericTotalPositionProgressionService
     private int[] convertKeyStringToKeyCuts(String keyString, int startingDepth, String attributeKey)
         throws ValidationException {
 
-        // Convert the key string into a long (returns 'null' if an error).
-        Long keyStringLong = Long.getLong(keyString);
-        if (keyStringLong == null) {
+        try {
+
+            // Parse the numeric string into a Long.
+            // Throws: NumberFormatException
+            Long keyStringLong = Long.parseLong(keyString);
+
+            // Extract the cut depths and populate the key cuts with them.
+            int cutCount = keyString.length();
+            int[] keyCuts = new int[cutCount];
+            int keyStringVal = keyStringLong.intValue();
+            for (int cut = 0; cut < cutCount; cut++) {
+
+                // Calculate the depth.
+                // (If the depth is '0' and the starting depth is '1', then this depth is actually a '10'.)
+                int depth = keyStringVal % 10;
+                if ((depth == 0) && (startingDepth == 1))
+                    depth = 10;
+
+                // Set the depth into the key cuts.
+                keyCuts[cutCount - cut - 1] = depth;
+                keyStringVal /= 10;
+            }
+
+            // Return the int array.
+            return keyCuts;
+
+        } catch (NumberFormatException ex) {
 
             StringBuilder sb = new StringBuilder();
             sb.append("The '");
@@ -286,25 +310,5 @@ public class GenericTotalPositionProgressionService
 
             throw new ValidationException(errorMessage);
         }
-
-        // Extract the cut depths and populate the key cuts with them.
-        int cutCount = keyString.length();
-        int[] keyCuts = new int[cutCount];
-        int keyStringVal = keyStringLong.intValue();
-        for (int cut = 0; cut < cutCount; cut++) {
-
-            // Calculate the depth.
-            // (If the depth is '0' and the starting depth is '1', then this depth is actually a '10'.)
-            int depth = keyStringVal % 10;
-            if ((depth == 0) && (startingDepth == 1))
-                depth = 10;
-
-            // Set the depth into the key cuts.
-            keyCuts[cutCount - cut - 1] = depth;
-            keyStringVal /= 10;
-        }
-
-        // Return the int array.
-        return keyCuts;
     }
 }

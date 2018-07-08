@@ -7,8 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * This class tests the {@link TotalPositionProgressionCriteria} class.
@@ -487,10 +486,87 @@ public class TotalPositionProgressionCriteriaTest {
         }
     }
 
-    // TODO: Need tests for .validateCutCount().
+    /*
+     * .validateCutCount() tests
+     */
 
-    // TODO: Need tests for .validateStartingDepth().
+    @Test
+    public void testValidateCutCount_TooSmall() {
 
-    // TODO: Need tests for .validateMACS().
+        assertFalse(TotalPositionProgressionCriteria.validateCutCount(2));
+    }
 
+    @Test
+    public void testValidateCutCount_Min() {
+
+        assertTrue(TotalPositionProgressionCriteria.validateCutCount(3));
+    }
+
+    @Test
+    public void testValidateCutCount_Max() {
+
+        assertTrue(TotalPositionProgressionCriteria.validateCutCount(7));
+    }
+
+    @Test
+    public void testValidateCutCount_TooLarge() {
+
+        assertFalse(TotalPositionProgressionCriteria.validateCutCount(8));
+    }
+
+    /*
+     * .validateStartingDepth() tests
+     */
+
+    @Test
+    public void testValidateStartingDepth_TooSmall() {
+
+        assertFalse(TotalPositionProgressionCriteria.validateStartingDepth(-1));
+    }
+
+    @Test
+    public void testValidateStartingDepth_Min() {
+
+        assertTrue(TotalPositionProgressionCriteria.validateStartingDepth(0));
+    }
+
+    @Test
+    public void testValidateStartingDepth_Max() {
+
+        assertTrue(TotalPositionProgressionCriteria.validateStartingDepth(1));
+    }
+
+    @Test
+    public void testValidateStartingDepth_TooLarge() {
+
+        assertFalse(TotalPositionProgressionCriteria.validateStartingDepth(2));
+    }
+
+    /*
+     * .validateMACS() tests
+     */
+
+    @Test
+    public void testValidateMACS_TooSmall() {
+
+        assertFalse(TotalPositionProgressionCriteria.validateMACS(0));
+    }
+
+    @Test
+    public void testValidateMACS_Min() {
+
+        assertTrue(TotalPositionProgressionCriteria.validateMACS(1));
+    }
+
+    @Test
+    public void testValidateMACS_Max() {
+
+        assertTrue(TotalPositionProgressionCriteria.validateMACS(10));
+    }
+
+    @Test
+    public void testValidateMACS_TooLarge() {
+
+        assertFalse(TotalPositionProgressionCriteria.validateMACS(11));
+    }
 }
