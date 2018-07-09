@@ -238,6 +238,7 @@ public class GenericTotalPositionProgressionService
                     .setMasterCuts(masterCuts)
                     .setProgressionSteps(progressionSteps)
                     .setProgressionSequence(progressionSequence)
+                    .setStartingDepth(startingDepth)
                     .build();
 
             // Return the newly created criteria.

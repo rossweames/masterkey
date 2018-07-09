@@ -27,6 +27,7 @@ public class TotalPositionProgressionCriteriaTest {
             {6, 6, 6, 5, 6, 6}
     };
     private static final int[] TEST_PROGRESSION_SEQUENCE = {1, 2, 3, 4, 5, 6};
+    private static final int TEST_STARTING_DEPTH = 1;
 
     /**
      * The config builder.
@@ -44,7 +45,8 @@ public class TotalPositionProgressionCriteriaTest {
                 .setMACS(TEST_MACS)
                 .setMasterCuts(TEST_MASTER_CUTS)
                 .setProgressionSteps(TEST_PROGRESSION_STEPS)
-                .setProgressionSequence(TEST_PROGRESSION_SEQUENCE);
+                .setProgressionSequence(TEST_PROGRESSION_SEQUENCE)
+                .setStartingDepth(TEST_STARTING_DEPTH);
     }
 
     /**
@@ -476,6 +478,86 @@ public class TotalPositionProgressionCriteriaTest {
                     .setMasterCuts(new int[] {4, 5})
                     .setProgressionSteps(new int[][] {{6, 7}, {2, 3}})
                     .setProgressionSequence(new int[] {1, 1})
+                    .build();
+
+            fail();
+
+        } catch (ValidationException e) {
+
+            // Expected results
+        }
+    }
+
+    /**
+     * Starting depth tests
+     */
+
+    @Test
+    private void testBuild_TooSmallStartingDepth() {
+
+        try {
+
+            int startingDepth =  -1;
+
+            configBuilder
+                    .setStartingDepth(startingDepth)
+                    .build();
+
+            fail();
+
+        } catch (ValidationException e) {
+
+            // Expected results
+        }
+    }
+
+    @Test
+    private void testBuild_MinimumStartingDepth() {
+
+        try {
+
+            int startingDepth =  0;
+
+            TotalPositionProgressionCriteria criteria = configBuilder
+                    .setStartingDepth(startingDepth)
+                    .build();
+
+            assertNotNull(criteria);
+
+        } catch (ValidationException e) {
+
+            fail();
+        }
+    }
+
+    @Test
+    private void testBuild_MaximumStartingDepth() {
+
+        try {
+
+            int startingDepth =  1;
+
+            TotalPositionProgressionCriteria criteria = configBuilder
+                    .setStartingDepth(startingDepth)
+                    .build();
+
+            assertNotNull(criteria);
+
+        } catch (ValidationException e) {
+
+            fail();
+        }
+    }
+
+    @Test
+    private void testBuild_TooLargeStartingDepth() {
+
+        try {
+
+            int startingDepth =  2;
+
+            configBuilder
+                    .setStartingDepth(startingDepth)
                     .build();
 
             fail();

@@ -46,6 +46,9 @@ public class TotalPositionProgressionCriteria implements ProgressionCriteria {
     // The progression sequence
     private final int[] progressionSequence;
 
+    // The starting depth
+    private final int startingDepth;
+
     /**
      * Constructor
      * This constructor has been declared private so that it can only
@@ -55,13 +58,16 @@ public class TotalPositionProgressionCriteria implements ProgressionCriteria {
      * @param masterCuts the master cuts to set
      * @param progressionSteps the progression steps to set
      * @param progressionSequence the progression sequence to set
+     * @param startingDepth the starting depth
      */
-    private TotalPositionProgressionCriteria(int macs, int[] masterCuts, int[][] progressionSteps, int[] progressionSequence) {
+    private TotalPositionProgressionCriteria(int macs, int[] masterCuts, int[][] progressionSteps,
+        int[] progressionSequence, int startingDepth) {
 
         this.macs = macs;
         this.masterCuts = masterCuts;
         this.progressionSteps = progressionSteps;
         this.progressionSequence = progressionSequence;
+        this.startingDepth = startingDepth;
     }
 
     /**
@@ -101,6 +107,15 @@ public class TotalPositionProgressionCriteria implements ProgressionCriteria {
     }
 
     /**
+     * Gets the starting depth.
+     *
+     * @return the starting depth
+     */
+    public int getStartingDepth() {
+        return startingDepth;
+    }
+
+    /**
      * This class builds {@link TotalPositionProgressionCriteria} objects.
      * All objects built by this builder have been validated.
      */
@@ -113,6 +128,7 @@ public class TotalPositionProgressionCriteria implements ProgressionCriteria {
         private int[] masterCuts;
         private int[][] progressionSteps;
         private int[] progressionSequence;
+        private int startingDepth;
 
         /**
          * Sets the MACS.
@@ -163,6 +179,19 @@ public class TotalPositionProgressionCriteria implements ProgressionCriteria {
         public Builder setProgressionSequence(int[] progressionSequence) {
 
             this.progressionSequence = progressionSequence;
+            return this;
+        }
+
+        /**
+         * Sets the starting depth.
+         * Returns the {@link Builder} so these operations can be chained.
+         *
+         * @param startingDepth the new starting depth
+         * @return this builder
+         */
+        public Builder setStartingDepth(int startingDepth) {
+
+            this.startingDepth = startingDepth;
             return this;
         }
 
@@ -228,6 +257,25 @@ public class TotalPositionProgressionCriteria implements ProgressionCriteria {
                 sb.append(TotalPositionProgressionCriteria.CUT_COUNT_MIN);
                 sb.append(", ");
                 sb.append(TotalPositionProgressionCriteria.CUT_COUNT_MAX);
+                sb.append("].");
+                String errorMessage = sb.toString();
+                logger.error(errorMessage);
+
+                throw new ValidationException(errorMessage);
+            }
+
+            /*
+             * The starting depth must be within range.
+             */
+            if (!validateStartingDepth(startingDepth)) {
+
+                StringBuilder sb = new StringBuilder();
+                sb.append("The starting depth is out of range (");
+                sb.append(startingDepth);
+                sb.append(") [");
+                sb.append(TotalPositionProgressionCriteria.STARTING_DEPTH_MIN);
+                sb.append(", ");
+                sb.append(TotalPositionProgressionCriteria.STARTING_DEPTH_MAX);
                 sb.append("].");
                 String errorMessage = sb.toString();
                 logger.error(errorMessage);
@@ -384,7 +432,8 @@ public class TotalPositionProgressionCriteria implements ProgressionCriteria {
             validate();
 
             // Construct and return the configs.
-            return new TotalPositionProgressionCriteria(macs, masterCuts, progressionSteps, progressionSequence);
+            return new TotalPositionProgressionCriteria(macs, masterCuts, progressionSteps, progressionSequence,
+                    startingDepth);
         }
     }
 

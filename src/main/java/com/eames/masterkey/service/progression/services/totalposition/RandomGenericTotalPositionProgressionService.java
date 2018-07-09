@@ -360,6 +360,7 @@ public class RandomGenericTotalPositionProgressionService
                     .setMasterCuts(masterCuts)
                     .setProgressionSteps(progressionSteps)
                     .setProgressionSequence(progressionSequence)
+                    .setStartingDepth(startingDepth)
                     .build();
 
             // Return the criteria.
