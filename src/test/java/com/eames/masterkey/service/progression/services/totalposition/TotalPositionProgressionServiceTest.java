@@ -67,6 +67,7 @@ public class TotalPositionProgressionServiceTest {
                             {8, 7, 1, 2, 9, 1}
                     })
                     .setProgressionSequence(new int[]{5, 3, 1, 6, 4, 2})
+                    .setStartingDepth(0)
                     .build();
 
             TotalPositionProgressionService service = new TotalPositionProgressionService(criteria);
@@ -233,6 +234,7 @@ public class TotalPositionProgressionServiceTest {
                             {5, 6, 1, 2, 4}
                     })
                     .setProgressionSequence(new int[]{1, 2, 3, 4, 5})
+                    .setStartingDepth(1)
                     .build();
 
             TotalPositionProgressionService service = new TotalPositionProgressionService(criteria);

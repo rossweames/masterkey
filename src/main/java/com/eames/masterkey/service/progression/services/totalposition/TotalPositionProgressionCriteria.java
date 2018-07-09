@@ -124,11 +124,11 @@ public class TotalPositionProgressionCriteria implements ProgressionCriteria {
         /**
          * The attributes to be used to build the configs
          */
-        private int macs;
+        private int macs = MACS_MIN - 1;
         private int[] masterCuts;
         private int[][] progressionSteps;
         private int[] progressionSequence;
-        private int startingDepth;
+        private int startingDepth = STARTING_DEPTH_MIN - 1;
 
         /**
          * Sets the MACS.
