@@ -23,8 +23,6 @@ import org.json.JSONObject;
  *     macs : [1-10] // The Maximum Adjacent Cut Specification
  * }
  *
- * TODO: Need tests for this class.
- *
  * This Progression service is automatically registered by the
  * {@link com.eames.masterkey.aws.gateway.http.BittingListHTTPGateway} at startup.
  */
