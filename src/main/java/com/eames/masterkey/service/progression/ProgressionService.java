@@ -9,6 +9,13 @@ import com.eames.masterkey.service.ProcessingCapability;
 public interface ProgressionService
         extends Service {
 
+    /*
+     * The configuration constants
+     */
+
+    // The capability that gets injected during the validation operation
+     static final String CAPABILITY_KEY = "capability";
+
     /**
      * Checks whether this service can process the given configurations.
      *

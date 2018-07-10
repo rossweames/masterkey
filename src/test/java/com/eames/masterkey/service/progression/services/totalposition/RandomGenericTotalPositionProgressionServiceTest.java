@@ -4,11 +4,11 @@ import com.eames.masterkey.service.ProcessingCapability;
 import com.eames.masterkey.service.progression.ProgressionServiceException;
 import com.eames.masterkey.service.progression.ProgressionServiceResults;
 import org.json.JSONObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * This class tests the {@link RandomGenericTotalPositionProgressionService} class.
@@ -24,7 +24,7 @@ public class RandomGenericTotalPositionProgressionServiceTest {
     /**
      * Gets called before each test.
      */
-    @Before
+    @BeforeEach
     public void setUp() {
 
         // Create the service.
@@ -42,7 +42,7 @@ public class RandomGenericTotalPositionProgressionServiceTest {
     /**
      * Gets called after each test.
      */
-    @After
+    @AfterEach
     public void tearDown() {
 
         service = null;

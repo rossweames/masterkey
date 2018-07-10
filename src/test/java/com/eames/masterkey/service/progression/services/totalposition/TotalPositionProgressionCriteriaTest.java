@@ -1,14 +1,13 @@
 package com.eames.masterkey.service.progression.services.totalposition;
 
 import com.eames.masterkey.service.ValidationException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * This class tests the {@link TotalPositionProgressionCriteria} class.
@@ -28,6 +27,7 @@ public class TotalPositionProgressionCriteriaTest {
             {6, 6, 6, 5, 6, 6}
     };
     private static final int[] TEST_PROGRESSION_SEQUENCE = {1, 2, 3, 4, 5, 6};
+    private static final int TEST_STARTING_DEPTH = 1;
 
     /**
      * The config builder.
@@ -37,22 +37,23 @@ public class TotalPositionProgressionCriteriaTest {
     /**
      * Gets called before each test.
      */
-    @Before
-    public void setUp() {
+    @BeforeEach
+    private void setUp() {
 
         // Construct the builder and fill it with valid values.
         configBuilder = new TotalPositionProgressionCriteria.Builder()
                 .setMACS(TEST_MACS)
                 .setMasterCuts(TEST_MASTER_CUTS)
                 .setProgressionSteps(TEST_PROGRESSION_STEPS)
-                .setProgressionSequence(TEST_PROGRESSION_SEQUENCE);
+                .setProgressionSequence(TEST_PROGRESSION_SEQUENCE)
+                .setStartingDepth(TEST_STARTING_DEPTH);
     }
 
     /**
      * Gets called after each test.
      */
-    @After
-    public void tearDown() {
+    @AfterEach
+    private void tearDown() {
 
         // Clear the builder.
         configBuilder = null;
@@ -63,7 +64,7 @@ public class TotalPositionProgressionCriteriaTest {
      */
 
     @Test
-    public void testBuild_Valid() {
+    private void testBuild_Valid() {
 
         try {
 
@@ -82,7 +83,7 @@ public class TotalPositionProgressionCriteriaTest {
      */
 
     @Test
-    public void testBuild_NegativeMACS() {
+    private void testBuild_NegativeMACS() {
 
         try {
 
@@ -101,7 +102,7 @@ public class TotalPositionProgressionCriteriaTest {
     }
 
     @Test
-    public void testBuild_ZeroMACS() {
+    private void testBuild_ZeroMACS() {
 
         try {
 
@@ -139,14 +140,14 @@ public class TotalPositionProgressionCriteriaTest {
     }
 
     @Test
-    public void testBuild_0MasterCut() {
+    public void testBuild_2MasterCut() {
 
         try {
 
             configBuilder
-                    .setMasterCuts(new int[] {})
-                    .setProgressionSteps(new int[][] {{}})
-                    .setProgressionSequence(new int[] {})
+                    .setMasterCuts(new int[] {1, 2})
+                    .setProgressionSteps(new int[][] {{2, 3}})
+                    .setProgressionSequence(new int[] {1, 2})
                     .build();
 
             fail();
@@ -158,14 +159,14 @@ public class TotalPositionProgressionCriteriaTest {
     }
 
     @Test
-    public void testBuild_1MasterCut() {
+    public void testBuild_3MasterCut() {
 
         try {
 
             TotalPositionProgressionCriteria criteria = configBuilder
-                    .setMasterCuts(new int[] {4})
-                    .setProgressionSteps(new int[][] {{6}})
-                    .setProgressionSequence(new int[] {1})
+                    .setMasterCuts(new int[] {1, 2, 3})
+                    .setProgressionSteps(new int[][] {{2, 3, 4}})
+                    .setProgressionSequence(new int[] {1, 2, 3})
                     .build();
 
             assertNotNull(criteria);
@@ -173,6 +174,44 @@ public class TotalPositionProgressionCriteriaTest {
         } catch (ValidationException e) {
 
             fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void testBuild_7MasterCut() {
+
+        try {
+
+            TotalPositionProgressionCriteria criteria = configBuilder
+                    .setMasterCuts(new int[] {1, 2, 3, 4, 5, 6, 7})
+                    .setProgressionSteps(new int[][] {{2, 3, 4, 5, 6, 7, 8}})
+                    .setProgressionSequence(new int[] {1, 2, 3, 4, 5, 6, 7})
+                    .build();
+
+            assertNotNull(criteria);
+
+        } catch (ValidationException e) {
+
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void testBuild_8MasterCut() {
+
+        try {
+
+            configBuilder
+                    .setMasterCuts(new int[] {1, 2, 3, 4, 5, 6, 7, 8})
+                    .setProgressionSteps(new int[][] {{2, 3, 4, 5, 6, 7, 8, 9}})
+                    .setProgressionSequence(new int[] {1, 2, 3, 4, 5, 6, 7, 8})
+                    .build();
+
+            fail();
+
+        } catch (ValidationException e) {
+
+            // Expected results
         }
     }
 
@@ -447,5 +486,169 @@ public class TotalPositionProgressionCriteriaTest {
 
             // Expected results
         }
+    }
+
+    /**
+     * Starting depth tests
+     */
+
+    @Test
+    private void testBuild_TooSmallStartingDepth() {
+
+        try {
+
+            int startingDepth =  -1;
+
+            configBuilder
+                    .setStartingDepth(startingDepth)
+                    .build();
+
+            fail();
+
+        } catch (ValidationException e) {
+
+            // Expected results
+        }
+    }
+
+    @Test
+    private void testBuild_MinimumStartingDepth() {
+
+        try {
+
+            int startingDepth =  0;
+
+            TotalPositionProgressionCriteria criteria = configBuilder
+                    .setStartingDepth(startingDepth)
+                    .build();
+
+            assertNotNull(criteria);
+
+        } catch (ValidationException e) {
+
+            fail();
+        }
+    }
+
+    @Test
+    private void testBuild_MaximumStartingDepth() {
+
+        try {
+
+            int startingDepth =  1;
+
+            TotalPositionProgressionCriteria criteria = configBuilder
+                    .setStartingDepth(startingDepth)
+                    .build();
+
+            assertNotNull(criteria);
+
+        } catch (ValidationException e) {
+
+            fail();
+        }
+    }
+
+    @Test
+    private void testBuild_TooLargeStartingDepth() {
+
+        try {
+
+            int startingDepth =  2;
+
+            configBuilder
+                    .setStartingDepth(startingDepth)
+                    .build();
+
+            fail();
+
+        } catch (ValidationException e) {
+
+            // Expected results
+        }
+    }
+
+    /*
+     * .validateCutCount() tests
+     */
+
+    @Test
+    public void testValidateCutCount_TooSmall() {
+
+        assertFalse(TotalPositionProgressionCriteria.validateCutCount(2));
+    }
+
+    @Test
+    public void testValidateCutCount_Min() {
+
+        assertTrue(TotalPositionProgressionCriteria.validateCutCount(3));
+    }
+
+    @Test
+    public void testValidateCutCount_Max() {
+
+        assertTrue(TotalPositionProgressionCriteria.validateCutCount(7));
+    }
+
+    @Test
+    public void testValidateCutCount_TooLarge() {
+
+        assertFalse(TotalPositionProgressionCriteria.validateCutCount(8));
+    }
+
+    /*
+     * .validateStartingDepth() tests
+     */
+
+    @Test
+    public void testValidateStartingDepth_TooSmall() {
+
+        assertFalse(TotalPositionProgressionCriteria.validateStartingDepth(-1));
+    }
+
+    @Test
+    public void testValidateStartingDepth_Min() {
+
+        assertTrue(TotalPositionProgressionCriteria.validateStartingDepth(0));
+    }
+
+    @Test
+    public void testValidateStartingDepth_Max() {
+
+        assertTrue(TotalPositionProgressionCriteria.validateStartingDepth(1));
+    }
+
+    @Test
+    public void testValidateStartingDepth_TooLarge() {
+
+        assertFalse(TotalPositionProgressionCriteria.validateStartingDepth(2));
+    }
+
+    /*
+     * .validateMACS() tests
+     */
+
+    @Test
+    public void testValidateMACS_TooSmall() {
+
+        assertFalse(TotalPositionProgressionCriteria.validateMACS(0));
+    }
+
+    @Test
+    public void testValidateMACS_Min() {
+
+        assertTrue(TotalPositionProgressionCriteria.validateMACS(1));
+    }
+
+    @Test
+    public void testValidateMACS_Max() {
+
+        assertTrue(TotalPositionProgressionCriteria.validateMACS(10));
+    }
+
+    @Test
+    public void testValidateMACS_TooLarge() {
+
+        assertFalse(TotalPositionProgressionCriteria.validateMACS(11));
     }
 }
