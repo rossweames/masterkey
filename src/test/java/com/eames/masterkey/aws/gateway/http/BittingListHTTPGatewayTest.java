@@ -9,7 +9,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -50,9 +53,10 @@ public class BittingListHTTPGatewayTest {
     public void testConstructor() {
 
         // Expect the following classes.
-        Class[] expectedServiceClasses = new Class[] {
-                RandomGenericTotalPositionProgressionService.class,
-                GenericTotalPositionProgressionService.class};
+        ArrayList<Class> expectedServiceList = new ArrayList<>();
+        expectedServiceList.add(RandomGenericTotalPositionProgressionService.class);
+        expectedServiceList.add(GenericTotalPositionProgressionService.class);
+        Object[] expectedServices = expectedServiceList.stream().map(c -> c.getName()).sorted().toArray();
 
         ProgressionServiceProvider serviceProvider = gateway.getServiceProvider();
         assertNotNull(serviceProvider);
@@ -61,10 +65,7 @@ public class BittingListHTTPGatewayTest {
         assertNotNull(services);
 
         // Test the found service's classes against the expected service classes.
-        Class[] foundServiceClasses = new Class[services.size()];
-        int i = 0;
-        for (Service service : services)
-            foundServiceClasses[i++] = service.getClass();
-        assertArrayEquals(expectedServiceClasses, foundServiceClasses);
+        Object[] foundServices = services.stream().map(s -> s.getClass().getName()).sorted().toArray();
+        assertArrayEquals(expectedServices, foundServices);
     }
 }
